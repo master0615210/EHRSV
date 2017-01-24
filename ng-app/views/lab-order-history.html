@@ -1,0 +1,140 @@
+<div id="content">
+    <section>
+        <div class="card" ng-class="{true: 'custom-card'}[orderSelected]">
+            <div class="card-head card-head-custom card-color-3" ng-show="orderSelected">
+                <div class="col-lg-3">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Patient Name</label>
+                    <span class="txt-style-2 col-lg-12">{{ selectedOrder.patient_name }}</span>
+                </div>
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Patient Number</label>
+                    <span class="txt-style-2 col-lg-12">{{ selectedOrder.patient_id }}</span>
+                </div>
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Age</label>
+                    <span class="txt-style-2 col-lg-12">{{ selectedOrder.age }}</span>
+                </div>
+                <div class="col-lg-1">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Sex</label>
+                    <span class="txt-style-2 col-lg-12">{{ selectedOrder.gender }}</span>
+                </div>
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">marital status</label>
+                    <span class="txt-style-2 col-lg-12">{{ selectedOrder.marital_status }}</span>
+                </div>
+                <div class="col-lg-2">
+                    <a href="javascript:;" class="button-style-2">
+                        <img src="assets/img/content_icn_blue.png" />
+                    </a>
+                    <!-- <a href="javascript:;" class="button-style-2">
+                        <img src="assets/img/assign_blue.png" />
+                    </a> -->
+                    <a href="javascript:;" class="button-style-2">
+                        <img src="assets/img/discharge_icn_blue.png" />
+                    </a>                             
+                </div>
+            </div>
+            <div class="table-header col-lg-12">
+                <div class="col-lg-8">
+                    <span class="txt-style-3 pull-left text-uppercase">lab orders history</span>
+                    <div class="header-search pull-left">
+                        <button type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <input class="search_field search_field_big" type="text" placeholder="Search patient order by patient name or id" ng-model="searchHistory">
+                    </div>
+                    <!--<button type="button" class="btn ink-reaction button-style-1 button-style-1 pull-left">Select</button>-->
+                </div> 
+            </div>
+            <div class="card-body col-lg-12">
+                <div>
+                    <table class="table table-striped no-margin table-custom">
+                        <thead>
+                            <tr>
+                                <!-- <th width="10px"></th> -->
+                                <th>date</th>
+                                <th>Order no</th>
+                                <th>Patient Id</th>
+                                <th>Patient Name</th>
+                                <th>lab test name</th>
+                                <!-- <th>loinic code</th> -->
+                                <th>lab</th>
+                                <!-- <th>ordered by</th> -->
+                                <th>report</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="labOrder in labOrders | filter:search">
+                                <!-- <td align="center">
+                                    <div class="radio radio-styled">
+                                        <label>
+                                            <input type="radio" ng-model="action" name="checked" ng-click="labSelected(labOrder.id);">
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </td> -->
+                                <td>{{ labOrder.created_at | cmdate:'MMM dd, yyyy hh:mm a' }}</td>
+                                <td>L{{ labOrder.id }}</td>
+                                <td><a href="#/patient-summary-demographics/{{labOrder.patient_id}}" class="link-style">P{{ labOrder.patient_id }}</a></td>
+                                <td>{{ labOrder.patient_name }}</td>
+                                <td>{{ labOrder.lab_test_name }}</td>
+                                <!-- <td></td> -->
+                                <td>{{ labOrder.lab_name }}</td>
+                                <!-- <td>{{ labOrder.ordered_by }}</td> -->
+                                <td><a href="javascript:;" class="link-style" ng-click="viewReport(labOrder.lab_order_test_id);">View</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--muzammil do you work here-->                    
+                    <div class="pagination pagination-centered pull-right" ng-show="labOrderCount">
+                        <ul class="pagination-controle pagination">
+                            <li class="prev-page">
+                                <button type="button" class="btn btn-primary" ng-disabled="curPage == 0" ng-click="curPage=curPage-1; paginationPrev(pageSize, curPage);"><i class="fa fa-caret-left"></i></button>
+                            </li>                            
+                            <li>
+                                <span class="pagination-detail">Page <input type="text" width="5px" ng-model="pageNumber" numbers-only value="{{curPage + 1}}" placeholder="Page Number"/><span class="space-both-side">of</span>{{ numberOfPages() }}</span>
+                            </li>
+                             <li class="next-page">
+                              <button type="button" class="btn btn-primary" ng-disabled="curPage >= labOrderCount/pageSize - 1" ng-click="curPage = curPage+1; paginationNext(pageSize, curPage);"><i class="fa fa-caret-right"></i></button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div><!--end .card-body -->
+        </div><!--end .card -->
+    </section>
+</div>
+<div class="modal fade modal-size_1" id="noRecordFound" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Status</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">No Record Found</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">Ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="previewReport"  tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Lab Test Report</h2>
+            </div>
+            <div class="modal-body" style="height: 500px;width: 100%;">
+            <!-- <div class="icons_con pull-right no-margin">
+                <button class="update button-custom" ng-disabled="is_signoff == 1" data-dismiss="modal">update report</button>
+            </div> -->
+                <div class="showPdf"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1"  data-dismiss="modal" >OK</button>
+                <!-- ng-click="doSignOff();" ng-disabled="is_signoff == 1" -->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

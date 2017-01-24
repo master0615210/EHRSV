@@ -1,0 +1,238 @@
+<div id="content">
+    <section>
+        <div class="card custom-card">
+            <div class="card-head card-head-custom card-color-2">
+                <h2 class="h2-style col-lg-12">Hospital Wards</h2>
+            </div>
+            <div class="table-header col-lg-12">
+                <div class="pull-left">
+                    <div class="header-search margin-right-0 pull-left">
+                        <button type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <input class="search_field" ng-model="search.name" type="text" placeholder="Search for ward">
+                    </div>
+                </div> 
+                <button type="button" class="delete button-custom pull-right" ng-hide="buttonDisabled" data-toggle="modal" data-target="#deleteConfirm">remove</button>
+                <button type="button" class="edit button-custom pull-right" ng-hide="buttonDisabled" data-toggle="modal" data-target="#updateWard">Update</button>
+                <button class="add button-custom pull-right" data-toggle="modal" data-target="#createWard">Add</button>
+                <button type="button" class="btn ink-reaction button-style-1 button-style-1_b pull-right margin-right-20 margin-top-5" ng-hide="buttonDisabled" ng-click="bedShematic();">Bed shematic</button>
+            </div>
+            <div class="card-body col-lg-12">
+                <div>
+                    <table class="table table-striped no-margin table-custom">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>ward <a href="javascript:void(0);" class="pull-right" ng-click="sortingByWard()"><i class="fa {{sortingWard}}" aria-hidden="true"></i></a></th>
+                                <th>speciality <a href="javascript:void(0);" class="pull-right" ng-click="sortingBySpeciality()"><i class="fa {{sortingSpeciality}}" aria-hidden="true"></i></a></th>
+                                <th>number of beds <a href="javascript:void(0);" class="pull-right" ng-click="sortingByBeds()"><i class="fa {{sortingBeds}}" aria-hidden="true"></i></a></th>
+                                <th>description</th>    
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="ward in allWards | filter:search | orderBy:sortOrder">
+                                <td align="center">
+                                    <div class="radio radio-styled">
+                                        <label>
+                                            <input type="radio" ng-model="action" name="optionsRadios" value="option1" ng-click="wardSelected(ward.id, $index);">
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>{{ward.name}}</td>
+                                <td>{{ward.speciality}}</td>
+                                <td>{{ward.number_of_beds}}</td>
+                                <td>{{ward.description}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+<!--                    <div class="pagination pagination-centered" ng-show="wardsCount">
+                        <ul class="pagination-controle pagination">
+                            <li>
+                              <button type="button" class="btn btn-primary" ng-disabled="curPage == 0" ng-click="curPage=curPage-1; paginationPrev(pageSize, curPage);"> &lt; PREV</button>
+                            </li>
+                            <li>
+                              <span>Page {{curPage + 1}} of {{ numberOfPages() }}</span>
+                            </li>
+                            <li>
+                              <button type="button" class="btn btn-primary" ng-disabled="curPage >= wardsCount/pageSize - 1" ng-click="curPage = curPage+1; paginationNext(pageSize, curPage);">NEXT &gt;</button>
+                            </li>
+                        </ul>
+                    </div>-->
+<div class="pagination pagination-centered pull-right" ng-show="wardsCount">
+                        <ul class="pagination-controle pagination">
+                            <li class="prev-page">
+                                <!--<button type="button" class="btn btn-primary" ng-disabled="curPage == 0" ng-click="curPage=curPage-1; paginationPrev(pageSize, curPage);"><i class="fa fa-caret-left"></i></button>-->
+                                <button type="button" class="btn btn-primary" ng-disabled="curPage == 0" ng-click="curPage=curPage-1; paginationPrev(pageSize, curPage);"><i class="fa fa-caret-left"></i></button>
+                            </li>                            
+                            <li>
+                                <span class="pagination-detail">Page <input type="text" width="5px" ng-model="pageNumber" numbers-only value="{{curPage + 1}}" placeholder="Page Number"/><span class="space-both-side">of</span>{{ numberOfPages() }}</span>
+                            </li>
+                             <li class="next-page">
+                              <!--<button type="button" class="btn btn-primary" ng-disabled="curPage >= patientCount/pageSize - 1" ng-click="curPage = curPage+1; paginationNext(pageSize, curPage);"><i class="fa fa-caret-right"></i></button>-->
+                              <button type="button" class="btn btn-primary" ng-disabled="curPage >= wardsCount/pageSize - 1" ng-click="curPage = curPage+1; paginationNext(pageSize, curPage);"><i class="fa fa-caret-right"></i></button>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div><!--end .card-body -->
+        </div><!--end .card -->
+    </section>
+</div>
+<div class="modal fade modal-size_2" id="createWard" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-mid">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Create Ward</h2>
+            </div>
+            <form class="custom-form" name="addForm" ng-model="myForm" novalidate ng-submit="createWard(addWard);">
+                <div class="modal-body">
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-2">
+                            <label>Ward Number</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" ng-model="addWard.date"disabled>
+                        </div>
+                        <div class="col-lg-2">
+                            <label>Ward</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" name="name" ng-model="addWard.name" ng-class="{true: 'error'}[submitted && addForm.name.$invalid]" required>
+                            <p class="help-block PIValid" ng-show="submitted && addForm.name.$error.required">Required</p>
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-2">
+                            <label>Speciality</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <select class="form-control" name="speciality" placeholder="Select Date"  ng-model="addWard.speciality" ng-class="{true: 'error'}[submitted && addForm.speciality.$invalid]" required>
+                                <option value=""></option>
+                                <option value="{{dd.id}}" ng-repeat="dd in dropDownData.departments">{{dd.name}}</option>                            </select>
+                            <p class="help-block PIValid" ng-show="submitted && addForm.speciality.$error.required">Required</p>
+                        </div>
+                        <div class="col-lg-2">
+                            <label>Number of beds</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" name="beds" ng-model="addWard.noOfBeds" ng-class="{true: 'error'}[submitted && addForm.beds.$invalid]" required numbers-only>
+                            <p class="help-block PIValid" ng-show="submitted && addForm.beds.$error.required">Required</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <label>Description</label>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="input-group col-lg-12">
+                                <textarea ng-model="addWard.description" name="desc" required ng-class="{true: 'error'}[submitted && addForm.desc.$invalid]"></textarea>
+                            </div>
+                            <p class="help-block PIValid" ng-show="submitted && addForm.desc.$error.required">Required</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-default button-style-1" ng-click="submitted = true;" ng-disabled="addformsubmission()">Save</button>
+                    <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal" ng-disabled="OrderBtn">Cancel</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_2" id="updateWard" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-mid">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Update Ward</h2>
+            </div>
+            <form class="custom-form" name="editForm" ng-model="editForm" novalidate ng-submit="updateWard(ward);">
+                <div class="modal-body">
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-2">
+                            <label>Ward Number</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" name="wardno" ng-model="ward.id" ng-class="{true: 'error'}[submitted && editForm.date.$invalid]" disabled>
+                            <p class="help-block PIValid" ng-show="submitted && editForm.wardno.$error.required">Required</p>
+                        </div>
+                        <div class="col-lg-2">
+                            <label>Ward</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" name="name" ng-model="ward.name" ng-class="{true: 'error'}[submitted && editForm.name.$invalid]" required>
+                            <p class="help-block PIValid" ng-show="submitted && editForm.name.$error.required">Required</p>
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-2">
+                            <label>Speciality</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <select class="form-control" name="speciality" placeholder="Select" ng-model="ward.department_id" ng-class="{true: 'error'}[submitted && editForm.speciality.$invalid]" required>
+                                <option value=""></option>
+                                <option value="{{dd.id}}" ng-repeat="dd in dropDownData.departments" ng-selected="dd.id == ward.department_id">{{dd.name}}</option>
+                            </select>
+                            <p class="help-block PIValid" ng-show="submitted && editForm.speciality.$error.required">Required</p>
+                        </div>
+                        <div class="col-lg-2">
+                            <label>Number of beds</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control" name="beds" ng-model="ward.number_of_beds" ng-class="{true: 'error'}[submitted && editForm.beds.$invalid]" required numbers-only>
+                            <p class="help-block PIValid" ng-show="submitted && editForm.beds.$error.required">Required</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <label>Description</label>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="input-group col-lg-12">
+                                <textarea ng-model="ward.description" name="desc" required ng-class="{true: 'error'}[submitted && editForm.desc.$invalid]"></textarea>
+                            </div>
+                            <p class="help-block PIValid" ng-show="submitted && editForm.desc.$error.required">Required</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-default button-style-1" ng-click="submitted = true;" ng-disabled="editformsubmission()">Save</button>
+                    <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal" ng-disabled="OrderBtn">Cancel</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="noResultFound" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>{{modalHeading}}</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">{{modalMessage}}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">Ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="deleteConfirm" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Confirmation</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Do you want to delete?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" ng-click="deleteWard()">Yes</button>
+                <button type="button" class="btn btn-default button-style-1 button-style-1_a" data-dismiss="modal">No</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

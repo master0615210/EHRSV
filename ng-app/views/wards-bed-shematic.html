@@ -1,0 +1,100 @@
+<div id="content">
+    <section>
+        <div class="card custom-card">
+            <div class="card-head card-head-custom card-color-2">
+                <h2 class="h2-style pull-left">Bed Occupancy Ward WRD{{wardID}}</h2>
+                <button data-toggle="modal" class="add button-custom-white pull-right" ng-click="newBed();">ADD</button>
+                <button class="delete button-custom-white pull-right" data-toggle="modal" data-target="#removeBed">Remove</button>
+                <button class="edit button-custom-white pull-right" data-toggle="modal" data-target="#editBed">Edit</button>
+            </div>
+            <div class="card-body col-lg-12 bed-box-con">
+                <div class="bed-box" ng-repeat="beds in allBedOccupancy" ng-click="statusValue(beds.bed_status)" status="{{beds.bed_status}}" id="{{beds.patient_bed_id}}" ng-click="selectBed(beds.id)">
+                    <span class="txt5">Bed No.</span>
+                    <span class="txt6">B{{beds.id}}</span>
+                    <img ng-if="beds.bed_status == 'available'" ng-src="assets/img/bed_available.png">
+                    <img ng-if="beds.bed_status == 'occupied'" ng-src="assets/img/bed_occupied.png">
+                    <img ng-if="beds.bed_status == 'closed'" ng-src="assets/img/bed_close.png">
+                    <span class="txt7 text-uppercase">{{beds.bed_status}}</span>
+                    <div class="bed-info" ng-if="beds.bed_status == 'occupied'">
+                        <div class="col-lg-12">
+                            <span class="txt-style-4">Name</span>
+                            <span class="txt-style-3 capitalize">{{beds.first_name}} {{beds.middle_name}} {{beds.last_name}}</span>
+                        </div>
+                        <div class="col-lg-4">
+                            <span class="txt-style-4">Sex</span>
+                            <span class="txt-style-3">{{beds.gender}}</span>
+                        </div>
+                        <div class="col-lg-8">
+                            <span class="txt-style-4">DOB</span>
+                            <span class="txt-style-3">{{beds.date_of_birth}}</span>
+                        </div>
+                        <div class="col-lg-12">
+                            <span class="txt-style-4">Expected Discharge Date</span>
+                            <span class="txt-style-3 pull-left">{{beds.expected_discharge_date}}</span><span class="txt-style-3 pull-left"></span>
+                        </div>
+                    </div>
+                </div>
+            </div><!--end .card-body -->
+            <!-- <div class="pagination pagination-centered" ng-show="bedCount">
+                <ul class="pagination-controle pagination">
+                    <li>
+                      <button type="button" class="btn btn-primary" ng-disabled="curPage == 0" ng-click="curPage=curPage-1; paginationPrev(pageSize, curPage);"> &lt; PREV</button>
+                    </li>
+                    <li>
+                      <span>Page {{curPage + 1}} of {{ numberOfPages() }}</span>
+                    </li>
+                    <li>
+                      <button type="button" class="btn btn-primary" ng-disabled="curPage >= bedCount/pageSize - 1" ng-click="curPage = curPage+1; paginationNext(pageSize, curPage);">NEXT &gt;</button>
+                    </li>
+                </ul>
+            </div> -->
+        </div><!--end .card -->
+    </section>
+</div>
+<div class="modal fade modal-size_1" id="noResultFound" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>{{modalHeading}}</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">{{modalMessage}}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">Ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="removeBed" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Confirmation</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Do you want to Delete?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" ng-click="deleteBed();">YES</button>
+                <button type="button" class="btn btn-default button-style-1 button-style-1_a" data-dismiss="modal">NO</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="editBed" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Confirmation</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Are you sure you want to change status?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" ng-click="updateBed(bedStatus);">YES</button>
+                <button type="button" class="btn btn-default button-style-1 button-style-1_a" data-dismiss="modal">NO</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

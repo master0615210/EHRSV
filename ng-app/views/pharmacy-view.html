@@ -1,0 +1,685 @@
+<div id="content">
+    <section>
+        <div class="card custom-card">
+            <div class="card-head card-head-custom card-color-4">
+                <div class="col-lg-3">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Patient Name</label>
+                    <span class="txt-style-2 col-lg-12">{{displayInfo.first_name}} {{displayInfo.last_name}}</span>
+                </div>
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Patient Number</label>
+                    <span class="txt-style-2 col-lg-12">P{{displayInfo.patient_id}}</span>
+                </div>
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Age</label>
+                    <span class="txt-style-2 col-lg-12">{{displayInfo.age}}</span>
+                </div>
+                <div class="col-lg-1">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Sex</label>
+                    <span class="txt-style-2 col-lg-12 capitalize">{{displayInfo.sex}}</span>
+                </div>
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">marital status</label>
+                    <span class="txt-style-2 col-lg-12 capitalize">{{displayInfo.marital_status}}</span>
+                </div>
+                <div class="col-lg-2" id="stripOptions">
+                    <a href="#/billing/{{displayInfo.patient_id}}" class="button-style-2">
+                        <img src="assets/img/content_icn_blue.png" />
+                    </a>
+                    <!-- <a href="javascript:;" class="button-style-2">
+                        <img src="assets/img/assign_blue.png" />
+                    </a> -->
+                    <a href="javascript:;" class="button-style-2" data-target="#checkout" data-toggle="modal" class="button-style-2">
+                        <img src="assets/img/discharge_icn_blue.png" />
+                    </a>                            
+                </div>
+            </div>
+            <div class="card-body col-lg-12 accordian-body-con">
+                <div class="panel-group custom-accordian" id="accordion3">
+                    <div class="card panel expanded">
+                        <div class="card-head card-head-sm">
+                            <header>prescription assessment</header>
+                            <div class="pull-right accordian-header-info">
+                                <label>Encounter Id</label>
+                                <span>E{{prescription_data.visit_id}}</span>
+                                <label>Date</label>
+                                <span>{{prescription_data.date[0]}}</span>
+                                <label>Provider</label>
+                                <span>{{prescription_data.Provider}}</span> 
+                            </div>                            
+                        </div>
+                        <div id="accordion3-1" class="collapse in">
+                            <div class="card-body card-body">
+                                <div class="col-lg-12 no-padding margin-bottom-30">
+                                    <button type="button" class="notes button-custom pull-right" data-target="#prescription-query" data-toggle="modal" ng-hide="dispensePharmacyButton">prescription query</button>
+                                    <button type="button" class="print button-custom pull-right" data-target="#print-prescription" data-toggle="modal">print prescription</button>
+                                    <button type="button" class="delete button-custom pull-right" ng-show="removePrescription" data-toggle="modal" data-target="#confirmation">remove medication</button>
+                                    <button type="button" ng-click="updateDispense()" class="update button-custom pull-right">update medication</button>
+                                    <button data-toggle="modal" data-target="#addmedication" class="add button-custom pull-right">add medication</button>
+                                    <button type="button" class="dispense_pharmacy button-custom pull-right" ng-hide="dispensePharmacyButton" ng-click="despensePharmacyFUn();">dispense pharmacy</button>
+                                    <button type="button" class="add button-custom pull-right" ng-hide="dispensePharmacyButton" data-toggle="modal" data-target="#addMaterials">Add Material</button>
+                                </div>
+                                <table class="table table-striped no-margin table-custom table-custom_big editable_table">
+                                    <thead>
+                                        <tr>
+                                            <th width="5px"></th>
+                                            <th>medication</th>
+                                            <th>sig</th>
+                                            <th>dispense</th>
+                                            <th>refills</th>
+                                            <th>total dispensed</th>
+                                            <th>balance</th>
+                                            <th>cost</th>
+                                            <th>status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="PrescriptionView in PrescriptionViews">
+                                            <td>
+                                                <div class="radio radio-styled">
+                                                    <label>
+                                                        <input ng-model="PrescriptionView.id" type="radio" name="optionsRadios" ng-click="selectedMedication(PrescriptionView.prescribe_medication_id, $index);">
+                                                        <span></span>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td><a class="link-style" href="javascript:;">{{PrescriptionView.medication}}</a></td>
+                                            <td>{{PrescriptionView.sig}}</td>
+                                            <td>{{PrescriptionView.dispense}}</td>
+                                            <td>{{PrescriptionView.reffills}}</td>
+                                            <!--ng-init="PrescriptionView.total_dispensed = PrescriptionView.amount"-->
+<td><input type="text" numbers-only ng-keyup="calculateBalance(PrescriptionView.dispense, PrescriptionView.total_dispense, $index, costArray[$index])" ng-model="PrescriptionView.total_dispense" ng-init="PrescriptionView.total_dispense = PrescriptionView.dispense * PrescriptionView.amount" disabled class="editDispensed" /></td>
+                                            <td>{{PrescriptionView.due}}</td>
+                                            <td><span ng-if="PrescriptionView.total_dispense != undefined && PrescriptionView.total_dispense != '' ">N{{PrescriptionView.amount}}</span>
+                                                <!--PrescriptionViews[$index].costArray-->
+                                            </td>
+                                            <td class="capitalize">{{PrescriptionView.medication_status}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <form class="custom-form row margin-top-50">
+                                    <div class="col-lg-6 no-padding">
+                                        <div class="col-lg-12">
+                                            <label>notes from physician</label>
+                                        </div>
+                                        <div class="col-lg-12"> <!-- Prescription.notes -->
+                                            <textarea ng-model="prescriptionPharmacyNotes" disabled></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 no-padding">
+                                        <div class="col-lg-12">
+                                            <label>pharmacy note</label>
+                                        </div>
+                                        <div class="col-lg-12"> <!-- prescriptionPharmacyNotes -->
+                                            <textarea ng-model="Prescription.notes" placeholder="We have run out of paracetamol"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 no-padding save_Pview_button">
+                                        <a href="#/pharmacy-prescription" type="button" class="btn ink-reaction button-style-1 btn-big button-style-1_a pull-right patient-submit-btn">cancel</a>
+                                        <button type="button" class="btn ink-reaction button-style-1 btn-big pull-right btn-default patient-submit-btn margin-right-10" ng-click="updatePharmacy()">save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div><!--end .panel -->
+                </div><!--end .panel-group -->
+
+            </div><!--end .card-body -->
+        </div><!--end .card -->
+    </section>
+</div>
+
+<div class="modal fade modal-size_1" id="print-prescription" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Print Prescription</h2>
+            </div>
+            <div class="modal-body" style="height: 500px;width: 100%;">
+            <div class="icons_con pull-right no-margin">
+                <button class="update button-custom" ng-disabled="is_signoff == 1" data-dismiss="modal">update report</button>
+            </div>
+                <div class="showPdf"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">OK</button>
+            </div>
+        </div><!-- /.modal-content -->
+
+
+    </div><!-- /.modal-dialog -->
+
+</div><!-- /.modal -->
+
+<div class="modal fade modal-size_2" id="prescription-query" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="custom-form" ng-submit="presQuery(presQueries);" novalidate name="query">
+                <div class="modal-header pop_head">
+                    <h2>Prescription Query</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="row margin-bottom-xxl">
+                    <div class="col-lg-3">
+                        <label>encounter id</label>
+                    </div>
+                    <div class="col-lg-3">
+                        <input type="text" ng-model="presQueries.encounter" disabled />
+                    </div>
+
+                    <div class="col-lg-3">
+                        <label>prescription id</label>
+                    </div>
+                    <div class="col-lg-3">
+                        <input type="text" value="In Progress" disabled ng-model="presQueries.prescriptionID"/>
+                    </div>
+                        </div>
+                    <div class="row margin-bottom-xxl">
+
+                    <div class="col-lg-3">
+                        <label>Select Doctor</label>
+                    </div>
+                    <div class="col-lg-9">
+                        <select class="form-control" ng-model="presQueries.doctor" name="doc" required ng-class="{true: 'error'}[submitted && query.doc.$invalid]" data-placeholder="Select">
+                            <option value=""></option>
+                            <option value="{{d.id}}" ng-repeat="d in dropDownData.doctors">{{d.name}}</option>
+                        </select>
+                        <p class="help-block PIValid" ng-show="submitted && query.doc.$error.required">Required</p>
+                    </div>
+                    </div>
+                    <div class="row">
+
+                    <div class="col-lg-12">
+                        <label>Observation to doctor</label>
+                    </div>
+                    <div class="col-lg-12">
+                        <textarea ng-model="presQueries.observation" name="observation" required ng-class="{true: 'error'}[submitted && query.observation.$invalid]" ></textarea>
+                        <p class="help-block PIValid" ng-show="submitted && query.observation.$error.required">Required</p>
+                    </div>
+                    </div>
+                    <div class="modal-footer row">
+                        <div class="col-lg-12 no-padding">
+                            <button type="submit" ng-click="submitted=true;" class="btn btn-default button-style-1">Save</button>
+                            <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+
+
+    </div><!-- /.modal-dialog -->
+
+</div><!-- /.modal -->
+<div class="modal fade modal-size_2" id="addmedication" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Add Medication</h2>
+            </div>
+            <div class="modal-body">
+                <form class="custom-form" novalidate ng-submit="savePharmacyPopUp()">
+                    <!--<div class="row">-->
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-3">
+                            <label>Medication</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <select ng-model="MedicationData.medication" class="form-control select_searchFields getMedicineName" placeholder="Select Medication">
+                                <option></option>
+                                <option ng-selected="MedicationData.medication == medicationDropData.name" value="{{medicationDropData.id}}" ng-repeat="medicationDropData in getDrugs">{{medicationDropData.name}}</option>{{allMedications}}
+                            </select>
+                        </div>                                              
+                    </div>
+                     <div class="row margin-bottom-xxl">
+                        <div class="col-lg-3">
+                            <label>SIG</label>
+                        </div>
+                        <div class="col-lg-8">
+                            <input ng-model="MedicationData.sig" type="text" placeholder="" />
+                        </div>
+                        <div class="col-lg-1">
+                            <!--open_sig-->
+                            <a href="javascript:;" data-target="#addsig" data-toggle="modal" class="setting-button button-custom pull-right"></a>
+                        </div>
+                     </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-3">
+                            <label>Dispense</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <input ng-model="MedicationData.dispense" numbers-only type="text" placeholder="" />
+                        </div>
+
+                        <div class="col-lg-3">
+                            <label>Refills</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <input ng-model="MedicationData.reffills" numbers-only type="text" placeholder="" />
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-3">
+                            <label>Pharmacy</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <!-- <select ng-model="MedicationData.pharmacy" class="form-control getpharmacyName" placeholder="Select Pharmacy">
+                                <option></option>
+                                <option ng-selected="MedicationData.pharmacy == pharmacyDataDrop.name" value="{{pharmacyDataDrop.name}}" ng-repeat="pharmacyDataDrop in allPharmacies">{{pharmacyDataDrop.name}}</option>
+                            </select> -->
+                            <!--{{MedicationData.pharmacyName}}-->
+                            <!--ng-value="pharmacyNameID"-->
+                            <input ng-model="MedicationData.pharmacyName" disabled type="text" placeholder="" />
+                            <input type="hidden" ng-model="MedicationData.pharmacy">
+                        </div>
+                        </div>
+                        <!-- <div class="col-lg-3 clear">
+                            <label>Note Of Pharmacy</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input ng-model="MedicationData.note_of_pharmacy" type="text" placeholder="" required/>
+                        </div> -->
+                        <div class="row margin-bottom-xxl">
+
+                        <div class="col-lg-9 col-lg-offset-3">
+                            <button ng-hide="showUpdate" type="button" ng-click="addMedication()" ng-disabled="AddButtonOnAddMedication" class="btn btn-default pull-left button-style-1">Add</button>
+                            <button type="button" ng-show="showUpdate" ng-click="addMedication(1)" class="btn btn-default pull-left button-style-1">Update</button>
+                        </div>
+ </div>
+
+                    <!--</div>-->
+
+                    <div class="medication_list">
+                        <div class="row med_row" ng-repeat="medicationDataPush in medicationsDataPush">
+                            <div class="col-lg-10">
+                                <div class="row">
+                                    <div class="col-lg-2">
+                                        <label>Medication</label>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <span>{{medicationDataPush.medicationName}}</span>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label>Dispense</label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <span>{{medicationDataPush.dispense}}</span>
+                                    </div>
+
+                                    <div class="col-lg-2 clear">
+                                        <label>SIG</label>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <span>{{medicationDataPush.sig}}</span>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label>Pharmacy</label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <span>{{medicationDataPush.pharmacyName}}</span>
+                                    </div>
+
+                                    <div class="col-lg-2 clear">
+                                        <!-- <label>Note</label> -->
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <!-- <span>{{medicationDataPush.note_of_pharmacy}}</span> -->
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label>Refill</label>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <span>{{medicationDataPush.reffills}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <a ng-click="medicationsDataPush.splice($index, 1)" href="javascript:;" class="delete remove_med button-custom pull-right"></a>
+                                <a href="javascript:;" ng-click="editMedication($index);" class="edit button-custom pull-right"></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-default button-style-1" ng-show="medicationsDataPush != ''">Send</button>
+                        <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div><!-- /.modal-content -->
+
+
+    </div><!-- /.modal-dialog -->
+
+</div><!-- /.modal -->
+
+<div class="modal fade modal-size_2" id="addsig" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Build Instructions</h2>
+            </div>
+            <div class="modal-body">
+                <form class="custom-form">
+                    <div class="row">
+                    <!--<div class="row">-->
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <label>Drug-Form</label>
+                                </div>
+                                <div class="col-lg-12 margin-bottom-xxl">
+                                    <select class="form-control" ng-model="buildInstructions.dose" placeholder="Select">
+                                        <option></option>
+                                        <option ng-repeat="dose in medicineUnits.dosage" value="{{dose.dosage}}">{{dose.dosage}}</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-12">
+                                    <label>Route</label>
+                                </div>
+                                <div class="col-lg-12 margin-bottom-xxl">
+                                    <select class="form-control" ng-model="buildInstructions.route" placeholder="Select">
+                                        <option></option>
+                                        <option ng-repeat="route in medicineUnits.route" value="{{route.route}}">{{route.route}}</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-12">
+                                    <label>Direction</label>
+                                </div>
+                                <div class="col-lg-12 margin-bottom-xxl">
+                                    <select class="form-control" ng-model="buildInstructions.direction" placeholder="Select">
+                                        <option></option>
+                                        <option ng-repeat="direction in medicineUnits.direction" value="{{direction.direction}}">{{direction.direction}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!--</div>-->
+                     <!--<div class="row ">-->
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <label>Unit</label>
+                                </div>
+                                <div class="col-lg-12 margin-bottom-xxl">
+                                    <select class="form-control" ng-model="buildInstructions.unit" placeholder="Select">
+                                        <option></option>
+                                        <option ng-repeat="unit in medicineUnits.unit" value="{{unit.unit}}">{{unit.unit}}</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-12">
+                                    <label>Frequency</label>
+                                </div>
+                                <div class="col-lg-12 margin-bottom-xxl">
+                                    <select class="form-control" ng-model="buildInstructions.frequency" placeholder="Select">
+                                        <option></option>
+                                        <option ng-repeat="frequency in medicineUnits.frequency" value="{{frequency.frequency}}">{{frequency.frequency}}</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-12">
+                                    <label>Duration</label>
+                                </div>
+                                <div class="col-lg-6 margin-bottom-xxl">
+                                    <input type="text" ng-model="buildInstructions.durationText" placeholder="Duration">
+                                </div>
+                                <div class="col-lg-6 margin-bottom-xxl">
+                                    <select class="form-control" ng-model="buildInstructions.duration" placeholder="Select">
+                                        <option></option>
+                                        <option ng-repeat="duration in medicineUnits.duration" value="{{duration.duration}}">{{duration.duration}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                    <!--</div>-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default update_sig button-style-1" ng-click="addSIG(buildInstructions);">Update</button>
+                        <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="checkout" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-mid">
+        <form class="custom-form" ng-submit="checkout(CO)">
+            <div class="modal-content">
+                <div class="modal-header pop_head">
+                    <h2>Check Out Patient</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="col-lg-12 no-padding margin-bottom-xxl">
+                        <div class="alert {{messageType}}" role="alert" ng-show="message">
+                            <i class="{{errorSymbol}}"></i> {{errorMessage}}
+                        </div>
+                        <div class="radio radio-styled">
+                            <label>
+                                <input type="radio" name="checkoutpatient" value="Noappointment" checked>
+                                <span>No Appointment</span>
+                            </label>
+                        </div>
+                        <div class="radio radio-styled">
+                            <label>
+                                <input type="radio" name="checkoutpatient" value="followUp" ng-model="CO.reason">
+                                <span>Follow up</span>
+                            </label>
+                        </div>
+                        <div class="radio radio-styled">
+                            <label>
+                                <input type="radio" name="checkoutpatient" value="admitPatient" ng-model="CO.reason">
+                                <span>Admit Patient</span>
+                            </label>
+                        </div>
+                        <div class="radio radio-styled">
+                            <label>
+                                <input type="radio" name="checkoutpatient" value="dead" ng-model="CO.reason">
+                                <span>Dead</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="checkout_patient_tab_con">
+                        <div id="Noappointment" class="active">
+                            <label class="margin-bottom-xl">Note</label>
+                            <textarea placeholder="Write Here..." ng-model="CO.note"></textarea>
+                        </div>
+                        <div id="followUp" class="row">
+                            <div class="col-lg-2">
+                                <label>DATE</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="input-group date select-date col-lg-12">
+                                    <div class="input-group-content">
+                                        <input type="text" class="form-control" placeholder="Select Date" ng-model="CO.date">
+                                    </div>
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <label>Time</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="input-group bootstrap-timepicker timepicker col-lg-12">
+                                    <input type="text" class="form-control input-small timepicker" ng-model="CO.time">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <label class="margin-bottom-xl">Note</label>
+                                <textarea class="margin-bottom-lg" placeholder="Write Here..." ng-model="CO.note"></textarea>
+                            </div>
+                        </div>
+                        <div id="admitPatient" class="row">
+                            <div class="margin-bottom-xxl row">
+                            <div class="col-lg-12">
+                                <span class="txt-style-4">Presenting Complaint: Captured from Clinical Note</span>
+                            </div>
+                                </div>
+                            <div class="margin-bottom-xxl row">
+                            <!-- <div class="col-lg-3">
+                                <label>to specialty</label>
+                            </div>
+                            <div class="col-lg-3 select-con">
+                                <select class="form-control" ng-model="CO.CPN" placeholder="Clinic Progress Notes">
+                                    <option value=""></option>
+                                <option value="{{w.id}}" ng-repeat="w in encountersDropdownData.departments">{{w.name}}</option>
+                                </select>
+                            </div> -->
+                            <div class="col-lg-3">
+                                <label>admit to ward</label>
+                            </div><!-- ng-class="{true: 'error'}[submitted && moveForm.ward.$invalid]"  -->
+                            <div class="col-lg-3 select-con select-con_small">
+                                <select class="form-control" name="ward" ng-change="wardSelected(CO.ward);" ng-model="CO.ward" placeholder="Select Ward">
+                                <option value=""></option>
+                                <option value="{{w.id}}" ng-repeat="w in wardDropdown">{{w.name}}</option>
+                            </select>
+                                <div class="ward-button-con" ng-hide="wardselect">
+                                    <button class="ward-button" ng-click="showbeds();" type="button"></button>
+                                    <div class="select-bed-dropdown" ng-hide="showBed">
+                                        <div class="radio radio-styled" ng-repeat="beds in noOFBeds">
+                                            <div class="radio radio-styled">
+                                                <label>
+                                                    <input type="radio" name="checked" ng-model="action" ng-click="bedSelected(beds.id);">
+                                                    <span>{{beds.id}}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="margin-bottom-xxl row">
+                            <div class="col-lg-3">
+                                <label>Admitted DATE</label>
+                            </div>
+                            <div class="col-lg-3">
+                                <label class="txt-style-4">{{admittedDate}}</label>
+                            </div>
+                            <div class="col-lg-3">
+                                <label>Estimated Discharge</label>
+                            </div>
+                            <div class="col-lg-3">
+                                <!-- <div class="input-group bootstrap-timepicker timepicker col-lg-12">
+                                    <input type="text" class="form-control input-small timepicker" ng-model="CO.discharge">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                </div> -->
+                                <div class="input-group date select-date col-lg-12">
+                                    <div class="input-group-content">
+                                        <input type="text" class="form-control" placeholder="Select Date" ng-model="CO.discharge">
+                                    </div>
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                                </div>
+                            <div class="margin-bottom-xxl row">
+                            <div class="col-lg-12">
+                                <label class="margin-bottom-xl">Note</label>
+                                <textarea class="margin-bottom-lg" placeholder="Write Here..." ng-model="CO.note"></textarea>
+                            </div>
+                                </div>
+                        </div>
+                        <div id="dead" class="row">
+                            <div class="col-lg-12">
+                                <label class="margin-bottom-xl">Note</label>
+                                <textarea class="margin-bottom-lg" placeholder="Write Here..." ng-model="CO.note"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer padding-right-0">
+                        <button type="submit" class="btn btn-default button-style-1 padding11">Save & Close</button>
+                        <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </form>
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="confirmation" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Confirmation</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Do you want to Delete?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-toggle="modal" ng-click="removePrescriptions();" data-dismiss="modal">Ok</button>
+                <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade modal-size_1" id="querySuccess" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Status</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Medication Quried Successfully</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">OK</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_2" id="addMaterials" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Add Material</h2>
+            </div>
+            <div class="modal-body">
+                <form class="custom-form">
+                <div class="row margin-bottom-xxl">
+                    <div class="col-lg-2">
+                        <label>Add Material</label>
+                    </div>
+                    <div class="col-lg-9 select-con" id="selectInventory">
+                        <select class="select_searchFields form-control" placeholder="Select Material" ng-model="prod_cat_name" ng-options="inventory.cat_name for inventory in allProdByCat track by inventory.id">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                    <div class="col-lg-1">
+                         <span class="plus" ng-click="addMaterial()"><i class="md-add"></i></span>
+                    </div>
+                </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-2">
+                            <label>Quantity</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input class="form-control" ng-model="prod_quantity" type="text" placeholder="01" numbers-only>
+                        </div>
+                    </div>
+                <div class="row" ng-show="addedMaterial.length > 0">
+                    <table class="table table-striped no-margin table-custom">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Cost</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--ng-repeat=""-->
+                            <tr ng-repeat="add in addedMaterial">
+                                <td>{{add.material}}</td>
+                                <td>{{add.cost}}</td>
+                                <td>{{add.quantity}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                    </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal" ng-click="addMaterials()" ng-disabled="addedMaterial.length == 0">sAVE</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

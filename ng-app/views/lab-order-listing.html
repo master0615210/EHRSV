@@ -1,0 +1,445 @@
+<div id="content">
+    <section>
+        <div class="card  hidden-print">
+            <div class="table-header col-lg-12">
+                <div class="col-lg-12 no-padding">
+                    <span class="txt-style-3 pull-left text-uppercase">lab orders</span>
+                    <div class="col-lg-2 pull-right no-margin">
+                        <select class="form-control">
+                            <option>Group By</option>
+                            <option>2</option>
+                            <option>3</option>
+                        </select>
+                    </div>
+                    <div class="header-search margin-right-0 pull-left">
+                        <button type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <input class="search_field search_field_big" type="text" placeholder="Search with patient order by patient name or id" ng-model="searchLab">
+                    </div>
+                </div>
+            </div>
+            <div class="card-body col-lg-12">
+                <div class="pull-left margin-top-10">
+                    <a class="link-style_2" href="javascript:;" ng-click="filterLabs.order_status = ''">all</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                    <a class="link-style_2" href="javascript:;" ng-click="filterLabs.order_status = 'created'">open orders</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                    <!-- <a class="link-style_2" href="javascript:;" ng-click="filterLabs.order_status = 'In Progress'">in progress</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                    <a class="link-style_2" href="javascript:;" ng-click="filterLabs.order_status = 'completed'">closed orders</a>&nbsp;&nbsp;|&nbsp;&nbsp; -->
+                    <a class="link-style_2" href="javascript:;" ng-click="filterLabs.order_status = 'Cancelled'">cancelled orders</a>
+                </div>
+                
+                <div class="icons_con">
+                    <button data-toggle="modal" data-target="#neworder" class="new_order button-custom">new order</button>
+                    <button data-toggle="modal" data-target="#signoff" class="add button-custom" ng-show="orderSelected" ng-disabled="signoffStatus == 1">Sign off</button>
+                    <button data-toggle="modal" data-target="#order-label" ng-show="orderSelected" class="print button-custom" >Order Label</button>
+                    <button class="report button-custom" ng-show="orderSelected" ng-click="go('/lab-order-tests')">View Tests</button>
+                    <button data-toggle="modal" data-target="#cancelOrder" class="update button-custom" ng-show="orderSelected">Cancel Order</button>
+                </div>
+                <div class="col-lg-12 no-padding">
+                    <!-- <div class="card-body col-lg-2">
+                        <select ng-model="pageSize" class="form-control" ng-change="selectBoxValue(pageSize);" placeholder="Number of Record">
+                            <option value="10" ng-selected="true">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div> -->
+                    <table class="table table-striped no-margin table-custom">
+                        <thead>
+                            <tr>
+                                <th width='10px'></th>
+                                <th>order no</th>
+                                <th>patient id</th>
+                                <th>patient name</th>
+                                <th>lab</th>
+                                <th>ordered by</th>
+                                <th>status</th>
+                                <th>total test</th>
+                                <th>test cost</th>
+                                <th>handling by</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--{{labOrders}}-->
+                            <tr ng-repeat="labOrder in labOrders | filter:search | filter:filterLabs">
+                                <!--{{labOrder}}-->
+                                <td align="center">
+                                    <div class="radio radio-styled">
+                                        <label>
+                                            <input type="radio" name="checked" ng-model="action" ng-click="labSelected(labOrder.id);">
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>{{ labOrder.id}}</td>
+                                <td>
+                                    <div class="person-detail-box"><span><a class="blue" href="#/patient-summary-demographics/{{labOrder.patient_id}}">P{{ labOrder.patient_id }}</a></span>
+                                        <div class="bed-info person_info">
+                                            <div class="col-lg-12">
+                                                <span class="txt-style-4">Name</span>
+                                                <span class="txt-style-3">{{ labOrder.patient_name }}</span>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <span class="txt-style-4">Sex</span>
+                                                <span class="txt-style-3">{{ labOrder.gender }}</span>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <span class="txt-style-4">Age</span>
+                                                <span class="txt-style-3">{{ labOrder.age }}</span>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <span class="txt-style-4">Id</span>
+                                                <span class="txt-style-3 pull-left">{{ labOrder.patient_id }}</span>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <span class="txt-style-4">Marital Status</span>
+                                                <span class="txt-style-3 pull-left">{{ labOrder.marital_status }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ labOrder.patient_name}}</td>
+                                <td>{{ labOrder.lab_name}}</td>
+                                <td>{{ labOrder.ordered_by}}</td>
+                                <td>{{ labOrder.order_status}}</td>
+                                <td>{{ labOrder.total_test}}</td>
+                                <!--<td>
+                                    <div class="person-detail-box"><span>{{ labOrder.total_test}}</span>
+                                        <div class="bed-info person_info">
+                                            <div class="col-lg-12 no-padding" ng-repeat="lab_test in labOrder.lab_tests">
+                                                <div class="col-lg-4">
+                                                    <span class="txt-style-4">Test</span>
+                                                    <span class="txt-style-3">{{ lab_test.test_name }}</span>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <span class="txt-style-4">Cost</span>
+                                                    <span class="txt-style-3">{{ lab_test.cost }}</span>
+                                                </div>
+                                                <div class="col-lg-4">
+                                                    <span class="txt-style-4">Priority</span>
+                                                    <span class="txt-style-3"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>-->
+                                <td>N{{labOrder.total_cost}}</td>
+                                <td>{{ labOrder.handled_by}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination pagination-centered hidden-print" ng-show="labOrderCount">
+<!--                    <div class="pagination pagination-centered" ng-show="labOrderCount">
+                        <ul class="pagination-controle pagination">
+                            <li>
+                              <button type="button" class="btn btn-primary" ng-disabled="curPage == 0" ng-click="curPage=curPage-1; paginationPrev(pageSize, curPage);"> &lt; PREV</button>
+                            </li>
+                            <li>
+                              <span>Page {{curPage + 1}} of {{ numberOfPages() }}</span>
+                            </li>
+                            <li>
+                              <button type="button" class="btn btn-primary" ng-disabled="curPage >= labOrderCount/pageSize - 1" ng-click="curPage = curPage+1; paginationNext(pageSize, curPage);">NEXT &gt;</button>
+                            </li>
+                        </ul>
+                    </div>-->
+<div class="pagination pagination-centered pull-right" ng-show="labOrderCount">
+                        <ul class="pagination-controle pagination">
+                            <li class="prev-page">
+                                <button type="button" class="btn btn-primary" ng-disabled="curPage == 0" ng-click="curPage=curPage-1; paginationPrev(pageSize, curPage);"><i class="fa fa-caret-left"></i></button>
+                            </li>                            
+                            <li>
+                                <span class="pagination-detail">Page <input type="text" width="5px" ng-model="pageNumber" numbers-only value="{{curPage + 1}}" placeholder="Page Number"/><span class="space-both-side">of</span>{{ numberOfPages() }}</span>
+                            </li>
+                             <li class="next-page">
+                              <button type="button" class="btn btn-primary" ng-disabled="curPage >= labOrderCount/pageSize - 1" ng-click="curPage = curPage+1; paginationNext(pageSize, curPage);"><i class="fa fa-caret-right"></i></button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal fade modal-size_3" id="neworder" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header pop_head">
+                                <h2>New Order</h2>
+                            </div>
+                            <form class="custom-form" name="addForm" ng-model="myForm" novalidate ng-submit="testAdded && createOrder(Order);">
+                                <div class="modal-body">
+                                    <div class="row margin-bottom-xxl">
+                                    <div class="col-lg-12">
+                                        <select class="form-control select_searchFields" ng-model="Order.patient_id" placeholder="Select Patient" name="patient_id" ng-class="{true: 'error'}[submitted && addForm.patient_id.$invalid]" required ng-hide="withVisit">
+                                            <option value=""></option>
+                                            <option ng-repeat="patient in patients" value="{{ patient.id }}">{{ patient.first_name + ' ' + patient.last_name }}</option>
+                                        </select>
+                                        <input type="text" value="{{prefilledPatientName}}" ng-show="withVisit" disabled="true" ng-value="createOrderPatientID">
+                                        <!-- <input type="text" value="{{prefilledPatientName}}" ng-show="withVisit"> -->
+                                        <p class="help-block PIValid" ng-show="submitted && addForm.patient_id.$error.required">Required</p>
+                                    </div>
+                                        </div>
+                                    <div class="row margin-bottom-xxl">
+                                    <div class="col-lg-2">
+                                        <label>time order created</label>
+                                    </div>
+                                    <div class="col-lg-4 margin-bottom-xxl">
+                                        <input type="text" placeholder="{{date | date:'MMM dd, yyyy hh:mm a'}}" disabled="" class="ng-pristine ng-untouched ng-valid ng-empty">
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label>LAB</label>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <select class="form-control" ng-model="Order.selected_lab" ng-change="updateLabTests(Order.selected_lab)" placeholder="Select Lab" name="selected_lab" ng-class="{true: 'error'}[submitted && addForm.selected_lab.$invalid]" required>
+                                            <option value=""></option>
+                                            <option ng-repeat="lab in labs" value="{{ lab.id }}">{{ lab.name }}</option>
+                                        </select>
+                                        <p class="help-block PIValid" ng-show="submitted && addForm.selected_lab.$error.required">Required</p>
+                                    </div>
+                                    </div>
+<!--                                    <div class="col-lg-3"><label></label></div>
+                                    <div class="col-lg-3"><label></label></div>-->
+                                <div class="row margin-bottom-xxl">
+                                    <div class="col-lg-2">
+                                        <label>add lab test</label>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <select class="form-control" id="lab_test" ng-model="Order.lab_test" placeholder="Search Lab Test" ng-options="labTest as labTest.name for labTest in labTests">
+                                            <option></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <select class="form-control" id="priority" ng-model="Order.priority" placeholder="Select Priority">
+                                            <option value=""></option>
+                                            <option>Low</option>
+                                            <option>Medium</option>
+                                            <option>High</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-1">
+                                        <span class="plus" ng-click="addTest()"><i class="md-add"></i></span>
+                                    </div>
+                                </div>
+                                <div class="row margin-bottom-xxl">
+                                    <div class="col-lg-12">
+                                        <p class="help-block PIValid" ng-show="submitted && !testAdded">Required</p>
+                                        <table class="table table-striped no-margin table-custom">
+                                            <thead>
+                                                <tr>
+                                                    <th>Test</th>
+                                                    <th>Cost</th>
+                                                    <th>Priority</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="lab_test in lab_tests_td">
+                                                    <td>{{ lab_test.name }}</td>
+                                                    <td>N{{ lab_test.cost }}</td>
+                                                    <td>{{ lab_test.priority }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>TOTAL COST</td>
+                                                    <td>N{{ lab_test_total }}</td>
+                                                    <td></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <label>add notes</label>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <textarea placeholder="Write here..." ng-model="Order.notes" name="notes" ng-class="{true: 'error'}[submitted && addForm.notes.$invalid]" required></textarea>
+                                    </div>
+                                </div>
+</div>
+                                <div class="modal-footer"> 
+                                    <button type="submit" class="btn btn-default button-style-1" ng-click="submitted = true;" ng-disabled="addformsubmission()">create</button>
+                                    <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal" ng-disabled="OrderBtn">Cancel</button>
+                                </div>
+                            </form>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
+                <div class="modal fade modal-size_2" id="cancelOrder" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form class="custom-form" name="cancelForm" ng-model="myForm" novalidate ng-submit="validateCancelOrderForm(cancelOrder);">
+                            <div class="modal-content">
+                                <div class="modal-header pop_head">
+                                    <h2>Cancel Order</h2>
+                                </div>
+                                <div class="alert {{messageType}}" role="alert" ng-show="message">
+                                    <i class="{{errorSymbol}}"></i> {{errorMessage}}
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row margin-bottom-xxl">
+                                    <div class="col-lg-3">
+                                        <label>Reason</label>
+                                    </div>
+                                    <div class="col-lg-6 select-con">
+                                        <select class="form-control" ng-class="{true: 'error'}[cancelSubmitted && cancelForm.reason.$invalid]" name="reason" ng-model="cancelOrder.reason" placeholder="Select Reason" required>
+                                            <option value=""></option>
+                                            <option>2</option>
+                                            <option>3</option>
+                                        </select>
+                                        <p class="help-block PIValid" ng-show="cancelSubmitted && cancelOrder.reason.$error.required">Required</p>
+                                    </div>
+                                        </div>
+                                    <div class="row">
+                                    <div class="col-lg-12">
+                                        <label class="margin-bottom-xl">Note</label>
+                                        <textarea placeholder="Write Here..." name="note" ng-model="cancelOrder.note" ng-class="{true: 'error'}[cancelSubmitted && cancelForm.note.$invalid]" required></textarea>
+                                        <p class="help-block PIValid" ng-show="cancelSubmitted && cancelForm.note.$error.required">Required</p>
+                                    </div>
+                                        </div>
+                                </div>
+                                  <div class="modal-footer">
+                                        <button type="submit" class="btn btn-default button-style-1" ng-click="cancelSubmitted = true;" ng-disabled="cancelSubmitted && cancelForm.$invalid">Proceed</button>
+                                        <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+                                    </div>
+                            </div><!-- /.modal-content -->
+                        </form>
+                    </div><!-- /.modal-dialog -->
+                </div><!-- /.modal -->
+            </div><!--end .card-body -->
+        </div><!--end .card -->
+    </section>
+</div>
+<div class="modal fade modal-size_1" id="noRecordFound" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Status</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">No Record Found</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">Ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="successSignoff" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Status</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Report Successfully Signed off</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">Ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="successSignoff" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Status</h2>
+            </div>
+            <div class="modal-body">
+                <p>Report Successfully Signed off</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">Ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+   <div class="modal fade modal-size_1" id="signoff" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content col-lg-12 no-padding">
+                <div class="modal-header pop_head">
+                    <h2>Order Report Sign Off</h2>
+                </div>
+                <div class="modal-body col-lg-12 modal-body-2 modal-body-2_a">
+                    <div class="icons_con pull-right">
+                        <button class="update button-custom" ng-disabled="signoffStatus == 1">update report</button> <!--pop up will open when signoff is not disabled-->
+                            </div>
+                    <div class="showPdf"></div>
+                </div>
+                <div class="modal-footer col-lg-12">
+                    <div class="pull-right">
+                        <button type="button" ng-click="signoff()" class="btn btn-default button-style-1" ng-disabled="signoffStatus == 1">sign off</button>
+                        <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">cancel report</button>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="order-label" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content pull-left">
+            <div class="modal-header pop_head">
+                <h2>Lab Order label</h2>
+            </div>
+            <div class="modal-body pull-left label-style-con modal-body-2">
+                <form class="custom-form">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label>Patient Name</label>
+                            <!--<label class="txt-style-4">{{ selectedOrder.patient_name }}</label>-->
+                            <label class="txt-style-4">{{selectedOrder.patient_name}}</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Patient ID</label>
+                            <label class="txt-style-4">{{ selectedOrder.patient_id }}</label>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <label>Gender</label>
+                            <label class="txt-style-4">{{ selectedOrder.gender }}</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Order Number</label>
+                            <label class="txt-style-4">{{ selectedOrder.id }}</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Test name</label>
+                            <label class="txt-style-4" ng-repeat="t in selectedOrder.test">{{ t.test_name }}</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Created By: {{selectedOrder.created_at | date:'MMM dd, yyyy hh:mm a'}}</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <img src="{{selectedOrder.barcode}}" alt="" ng-show="visibleImg"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer col-lg-12 hidden-print">
+                <div class="pull-left">
+                    <div class="checkbox checkbox-styled pull-left">
+                        <label>
+                            <input type="checkbox" value="" ng-model="barcodeInsert" ng-click="insertBarcode(barcodeInsert);">
+                            <span>Insert Barcode</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="pull-right">
+                    <button ng-click="openPrint()" type="button" class="printIdCard btn btn-default button-style-1" ng-hide="ROLES.Lab_order == undefined || ROLES.Lab_order.update_right == '0'">Print</button>
+                    <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+</div>
+<div class="modal fade modal-size_1" id="error200" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Error</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">{{errorLabOrder}}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">Ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

@@ -1,0 +1,271 @@
+<div id="content">
+    <section>
+        <div class="dashboard-new">
+            <div class="row">
+                <div class="col-md-3" ng-hide="ROLES.Patient == undefined">
+                    <a href="#/patient-listing">
+                        <div class="card">
+                            <div class="card-body color-style1 text-center">
+                                <div class="all-content">
+                                    <img class="pull-left" src="assets/img/dashboard/icon-1.png" />
+                                    <div class="details">
+                                        <span class="textstyle-1 pull-left">patients</span>
+                                        <span class="textstyle-2 pull-left">{{counts.patients_count}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3" ng-hide="ROLES.Encounter == undefined">
+                    <a href="#/new-encounter-patient-search">
+                        <div class="card">
+                            <div class="card-body color-style2 text-center">
+                                <div class="all-content">
+                                    <img class="pull-left" src="assets/img/dashboard/icon-2.png" />
+                                    <div class="details">
+                                        <span class="textstyle-1 pull-left">encounter</span>
+                                        <span class="textstyle-2 pull-left">{{counts.encounter_count}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3" ng-hide="ROLES.Appointments == undefined">
+                    <a href="#/appointments-list">
+                        <div class="card">
+                            <div class="card-body color-style3 text-center">
+                                <div class="all-content">
+                                    <img class="pull-left" src="assets/img/dashboard/icon-4.png" />
+                                    <div class="details">
+                                        <span class="textstyle-1 pull-left">appointments</span>
+                                        <span class="textstyle-2 pull-left">{{counts.appointments_count}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3" ng-hide="ROLES.Lab_order == undefined">
+                    <a href="#/lab-order-listing">
+                        <div class="card">
+                            <div class="card-body color-style4 text-center">
+                                <div class="all-content">
+                                    <img class="pull-left" src="assets/img/dashboard/icon-6.png" />
+                                    <div class="details">
+                                        <span class="textstyle-1 pull-left">laboratory</span>
+                                        <span class="textstyle-2 pull-left">{{counts.laboratory_count}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="grid-boxes-style-2">
+
+                <div class="col-md-3" ng-hide="ROLES.Pool_area == undefined">
+                    <a href="#/patient-pool-area">
+                        <div class="card">
+                            <div class="card-body">
+                                <span class="circle-img-con circle-style1"><img  src="assets/img/dashboard/icon-7.png" /></span>
+                                <span class="textstyle-1">patient pool area</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3" ng-hide="ROLES.Ward == undefined">
+                    <a href="#/ward-bed-listing">
+                        <div class="card">
+                            <div class="card-body">
+                                <span class="circle-img-con circle-style2"><img  src="assets/img/dashboard/icon-8.png" /></span>
+                                <span class="textstyle-1">hospital wards</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3" ng-hide="ROLES.Pharmacy == undefined">
+                    <a href="#/pharmacy">
+                        <div class="card">
+                            <div class="card-body">
+                                <span class="circle-img-con circle-style3"><img  src="assets/img/dashboard/icon-10.png" /></span>
+                                <span class="textstyle-1">pharmacy</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3" ng-hide="ROLES.Inventory == undefined">
+                    <a href="#/inventory">
+                        <div class="card">
+                            <div class="card-body">
+                                <span class="circle-img-con circle-style4"><img  src="assets/img/dashboard/icon-9.png" /></span>
+                                <span class="textstyle-1">inventory</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-3" ng-hide="ROLES.Bill == undefined">
+                    <a href="#/billing">
+                        <div class="card">
+                            <div class="card-body">
+                                <span class="circle-img-con circle-style5"><img  src="assets/img/dashboard/icon-12.png" /></span>
+                                <span class="textstyle-1">billing</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-6 dash-table-con">
+                <div class="card">
+                    <div class="card-head">
+                        <h2 class="pull-left bold-text textstyle-4">Today’s Appointments</h2>
+                        <label class="pull-right textstyle-4">{{date}}</label>
+                    </div>
+                    <div class="card-body">
+                        <form class="custom-form">
+                            <div class="scroll-container" ng-hide="ROLES.Appointments == undefined">
+                                <table class="table table-striped no-margin table-custom" ng-show="appointments.length > 0">
+                                    <thead>
+                                        <tr>
+                                            <th>patient id</th>
+                                            <th>patient name</th>
+                                            <th>time</th>
+                                            <th>whom to see</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="a in appointments">
+                                            <td>{{a.patient_id}}</td>
+                                            <td>{{a.first_name}} {{a.middle_name}} {{a.last_name}}</td>
+                                            <td>{{a.start_time}}</td>
+                                            <td>{{a.doctor}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p ng-hide="appointments.length > 0">No Appointments</p>
+                            </div>
+                            <p ng-show="ROLES.Appointments == undefined">You've No Rights</p>
+                            <div class="pagination pagination-centered pagination-dash pull-right margin-right-20" ng-show="appointmentCount">
+                                <ul class="pagination-controle pagination">
+                                    <li class="prev-page">
+                                        <button type="button" class="btn btn-primary" ng-disabled="curPage == 0" ng-click="curPage = curPage - 1;
+                                                paginationPrev(pageSize, curPage);"><i class="fa fa-caret-left"></i></button>
+                                    </li>                            
+                                    <li>
+                                        <span class="pagination-detail">Page <input type="text" width="5px" ng-model="pageNumberPharmacy" numbers-only value="{{curPage + 1}}" placeholder="Page Number"/><span class="space-both-side">of</span>{{ numberOfPages() }}</span>
+                                    </li>
+                                    <li class="next-page">
+                                        <button type="button" class="btn btn-primary" ng-disabled="curPage >= appointmentCount / pageSize - 1" ng-click="curPage = curPage + 1;
+                                                paginationNext(pageSize, curPage);"><i class="fa fa-caret-right"></i></button>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 dash-table-con">
+                <div class="card">
+                    <div class="card-head">
+                        <h2 class="pull-left bold-text textstyle-4">Today’s encounters</h2>
+                        <label class="pull-right textstyle-4">{{date}}</label>
+                    </div>
+                    <div class="card-body">
+                        <form class="custom-form">
+                            <div class="scroll-container" ng-hide="ROLES.Encounter == undefined">
+                                <table class="table table-striped no-margin table-custom" ng-show="EncounterCount > 0">
+                                    <thead>
+                                        <tr>
+                                            <th>patient id</th>
+                                            <th>patient name</th>
+                                            <th>time</th>
+                                            <th>whom to see</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="e in encounters">
+                                            <td>{{e.id}}</td>
+                                            <td>{{e.first_name}} {{e.middle_name}} {{e.last_name}}</td>
+                                            <td>{{e.created_at}}</td>
+                                            <td>{{e.name}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p ng-hide="EncounterCount > 0">No Encounters</p>
+                            </div>
+                            <p ng-show="ROLES.Encounter == undefined">You've No Rights</p>
+                            <div class="pagination pagination-centered pagination-dash pull-right margin-right-20" ng-show="EncounterCount">
+                                <ul class="pagination-controle pagination">
+                                    <li class="prev-page">
+                                        <button type="button" class="btn btn-primary" ng-disabled="EcurPage == 0" ng-click="EcurPage = EcurPage - 1;
+                                                paginationPrev(pageSize, EcurPage);"><i class="fa fa-caret-left"></i></button>
+                                    </li>                            
+                                    <li>
+                                        <span class="pagination-detail">Page <input type="text" width="5px" ng-model="pageNumberPharmacy" numbers-only value="{{EcurPage + 1}}" placeholder="Page Number"/><span class="space-both-side">of</span>{{ enumberOfPages() }}</span>
+                                    </li>
+                                    <li class="next-page">
+                                        <button type="button" class="btn btn-primary" ng-disabled="EcurPage >= pharmacyCount / pageSize - 1" ng-click="EcurPage = EcurPage + 1;
+                                                paginationNext(pageSize, EcurPage);"><i class="fa fa-caret-right"></i></button>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="dash-card-style-3">
+        <div class="col-lg-4">
+            <div class="card">      
+                <div class="card-body text-center">      
+                    <div class="all-content">
+                        <h3 class="dash-text text-color1 margin-0">{{counts.todays_encounter_count}}</h3>
+                        <div class="details">
+                            <span class="textstyle-5 margin-top-10">Total Visits</span>
+                            <span class="textstyle-6">{{month}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">      
+                <div class="card-body text-center">      
+                    <div class="all-content">
+                        <h3 class="dash-text text-color2 margin-0">{{counts.patients_prescription_count}}</h3>
+                        <div class="details">
+                            <span class="textstyle-5 margin-top-10">Total Prescriptions</span>
+                            <span class="textstyle-6">{{month}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <div class="col-lg-4">
+            <div class="card">      
+                <div class="card-body text-center">      
+                    <div class="all-content">
+                        <h3 class="dash-text text-color3 margin-0">{{counts.patients_admitted_count}}</h3>
+                        <div class="details">
+                            <span class="textstyle-5 margin-top-10">Total Admissions</span>
+                            <span class="textstyle-6">{{month}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+                </div>
+             </div>
+    </section>
+</div>
+         

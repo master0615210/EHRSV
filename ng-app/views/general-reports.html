@@ -1,0 +1,145 @@
+<div id="content">
+    <section>
+        <div class="card">
+            <div class="card-body col-lg-12 custom-card-body report-management">
+                <div class="table-header row background-none">
+                    <div class="row">
+                        <h2 class="heading-style col-lg-12">Report Managemnet</h2>
+                        <div class="col-lg-3">
+                            <label class="custom-label">From: </label>
+                            <div class="input-group date select-date">
+                                <div class="input-group-content">
+                                    <input type="text" class="form-control" placeholder="Select Date"  ng-model="startDate" ng-model-options="{ debounce: 1000 }" ng-change="changeReportDate()">
+                                </div>
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <label class="custom-label">To: </label>
+                            <div class="input-group date select-date">
+                                <div class="input-group-content">
+                                    <input type="text" class="form-control" placeholder="Select Date"  ng-model="endDate" ng-model-options="{ debounce: 1000 }" ng-change="changeReportDate()">
+                                </div>
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <label class="custom-label">Report Type: </label>
+                            <select class="form-control report-type" ng-model="selectedReportType" ng-change="selectReport(selectedReportType)">
+                                <option value="" ng-show="selectedReportType == ''">Select Report Type</option>
+                                <option ng-repeat="Report in reportList" value="{{Report.id}}">{{Report.value}}</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-2">
+                            <label class="custom-label">Filter: </label>
+                            <select class="form-control report-filter" ng-model="selectedReportFilter" ng-disabled="reportFilter.length == 0" ng-change="selectReportFilter()">
+                                <option value="" ng-show="selectedReportFilter == ''">Select Filter</option>
+                                <option ng-repeat="Filter in reportFilter" value="{{Filter.id}}">{{Filter.value}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="pull-right m-b-10 m-t-10" ng-show="reportData.data">
+                    <button class="print button-custom" data-toggle="modal" data-target="#previewModal">Preview</button>
+                    <button class="print button-custom" data-toggle="modal" data-target="#showPDF" ng-click="generateReportPDF()">Export to PDF</button>
+                    <button class="print button-custom" data-toggle="modal" data-target="#emailPDF">Email Report</button>
+                </div>
+                <form class="custom-form">
+                    <table class="table table-striped no-margin table-custom table-custom_big setting_table">
+                        <thead ng-if="reportData.header">
+                            <tr>
+                                <th ng-repeat="header in reportData.header">{{header}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="row in reportData.data">
+                                <td ng-repeat="value in row">{{value}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div><!--end .card-body -->
+        </div><!--end .card -->
+    </section>
+</div>
+
+<div class="modal fade modal-size_2" id="previewModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>{{selectedReport}}</h2>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p class="text-center report-table-title">{{selectedHeader}}</p>
+                    </div>
+                    <div class="row text-center" ng-if="startDate.length || endDate.length">
+                        <div class="col-lg-offset-3 col-lg-3">
+                            From: {{startDate}}
+                        </div>
+                        <div class="col-lg-3">
+                            To: {{endDate}}
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <table class="table table-striped no-margin table-custom table-custom_big setting_table">
+                            <thead ng-if="reportData.header">
+                                <tr>
+                                    <th ng-repeat="header in reportData.header">{{header}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="row in reportData.data">
+                                    <td ng-repeat="value in row">{{value}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer row">
+                <div class="col-lg-12">
+                    <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade modal-size_2" id="showPDF"  tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>General Report</h2>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <div class="showPdf"></div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1"  data-dismiss="modal" >Close</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade modal-size_1" id="emailPDF"  tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form name="emailForm" novalidate>
+                <div class="modal-header pop_head">
+                    <h2>Type Email Address</h2>
+                </div>
+                <div class="modal-body" style="width: 100%;">
+                    <input class="form-control" name="email" type="email" ng-model="email" required>
+                    <p class="help-error" ng-if="emailForm.email.$invalid && !emailForm.email.$pristine">Enter a valid email address</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default button-style-1"  ng-click="emailReport()" ng-disabled="emailForm.$invalid">Send</button>
+                    <button type="button" class="btn btn-default button-style-1"  data-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

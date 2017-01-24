@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="AppEHR">
+    <head>
+        <title>{{pageTitle}}</title>
+        <!--BEGIN META--> 
+        <!-- <base href="/ehr/ng-app/"> -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="keywords" content="your,keywords">
+        <meta name="description" content="Short explanation about this website">
+        <!--END META--> 
+        <!--BEGIN STYLESHEETS--> 
+        <link type="text/css" rel="stylesheet" href="assets/css/theme-default/bootstrap.css?1422792965" />
+        <link type="text/css" rel="stylesheet" href="assets/css/theme-default/materialadmin.css?1425466319" />
+        <link type="text/css" rel="stylesheet" href="assets/css/theme-default/font-awesome.min.css?1422529194" />
+        <link type="text/css" rel="stylesheet" href="assets/css/theme-default/material-design-iconic-font.min.css?1421434286" />
+        <link type="text/css" rel="stylesheet" href="assets/css/theme-default/libs/select2/select2.css?1424887856" />
+        <link type="text/css" rel="stylesheet" href="assets/css/theme-default/libs/scrollbar/jquery.mCustomScrollbar.min.css" />
+        <link type="text/css" rel="stylesheet" href="assets/css/theme-default/libs/multi-select/multi-select.css?1424887857" />
+        <link type="text/css" rel="stylesheet" href="assets/css/theme-default/libs/bootstrap-datepicker/datepicker3.css?1424887858" />
+        <link type="text/css" rel="stylesheet" href="assets/css/theme-default/libs/wizard/wizard.css" />
+        <!--grid files-->
+        <!-- <link href="assets/css/theme-default/ui-grid.css" rel="stylesheet" type="text/css"/> -->
+        <!--grid files-->
+        
+        <link href="assets/css/theme-default/style.css" rel="stylesheet" type="text/css"/>
+        <script src="assets/js/libs/jquery/jquery-1.11.2.min.js"></script>
+        <script src="assets/js/libs/jquery/jquery-migrate-1.2.1.min.js"></script>
+        <link type="text/css" rel="stylesheet" href="assets/css/theme-default/libs/jquery-ui/jquery-ui-theme.css?1423393666" />
+        <!--only for calendar-->
+        <link type="text/css" rel="stylesheet" href="assets/css/theme-default/libs/fullcalendar/fullcalendar.css?1425466619" />
+        <!--END STYLESHEETS--> 
+        <!--         HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries 
+                [if lt IE 9]>
+                <script type="text/javascript" src="assets/js/libs/utils/html5shiv.js?1403934957"></script>
+                <script type="text/javascript" src="assets/js/libs/utils/respond.min.js?1403934956"></script>
+        <![endif]-->
+    </head>
+    <body class="menubar-hoverable header-fixed">
+        <div class="loader {{mainLoader}}"></div>
+        <header id="header" class="hide {{class}}">
+            <form novalidate>
+                <div class="headerbar hidden-print">
+                    <div class="headerbar-left headerWithSwitchingImages1" ng-init="secondOptionsEnable = true" ng-show="secondOptionsEnable">
+                        <a href="#/patient-registration" ng-click="loadView(PI);" class="white-btn"><img src="assets/img/add_person.png" /></a>
+                        <a href="javascript:;" class="white-btn disabled-header-option headerleftOptions"><img src="assets/img/heart_plus.png" /></a>
+                        <a href="javascript:;" class="white-btn disabled-header-option headerleftOptions"><img src="assets/img/content_icn_white_2.png" /></a>
+                        <a href="javascript:;" class="white-btn disabled-header-option headerleftOptions"><img src="assets/img/report_icn.png" /></a>
+                    </div>
+                    <div class="headerbar-left headerWithSwitchingImages" ng-hide="secondOptionsEnable">
+                        <a href="#/patient-registration" ng-click="loadView(PI);" class="white-btn"><img src="assets/img/add_person.png"/></a>
+                        <a href="javascript:;" class="white-btn headerleftOptions" ng-click="encounterHeaderBar()"><img src="assets/img/heart_plus.png" /></a>
+                        <a href="javascript:;" class="white-btn headerleftOptions" ng-click="billingheaderBar();"><img src="assets/img/content_icn_white_2.png" /></a>
+                        <a href="javascript:;" class="white-btn headerleftOptions" ng-click="medicalHistoryheaderBar();"><img src="assets/img/report_icn.png" /></a>
+                    </div>
+                    <div class="headerbar-right">
+                        <a class="margin-right-20" href="javascript:;" ng-hide="true"><img src="assets/img/emergency.png" /></a>
+                        <div class="header-search">
+                            <button type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            <input type="text" id="autocomplete2" class="search_field" data-source="{{headerPatientSearch}}search_patient" placeholder="Search for a patient">
+                            <!-- <input type="text" id="autocomplete2" class="search_field" data-source="http://demoz.online/staging/ehr/public/api/search_patient" placeholder="Search for a patient"> -->
+                        </div> 
+                        <!-- <a href="javascript:;" class="button-style-2">
+                            <img src="assets/img/admission_icn.png" />
+                        </a>
+                        <a href="javascript:;" class="button-style-2">
+                            <img src="assets/img/discharge_icn.png" />
+                        </a> -->
+                        <ul class="header-nav header-nav-profile">
+                            <li class="dropdown">
+                                <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
+                                    <img data-src="assets/img/profile_pic.jpg" src="" class="invisible" alt="" />
+                                    <span class="profile-info">
+                                        {{userName}}
+                                    </span>
+                                </a>
+                                <ul class="dropdown-menu animation-dock">
+                                    <li><a href="#/user-profile">My profile</a></li>
+                                    <!-- <li><a href="#/">Setting</a></li> -->
+                                    <li><a href="#/logout">Logout</a></li>
+                                </ul><!--end .dropdown-menu -->
+                            </li><!--end .dropdown -->
+                        </ul><!--end .header-nav-profile -->
+                    </div>
+                </div>
+            </form>
+        </header>
+        <div class="loader hide {{loader}}"></div>
+        <div id="base" class="{{backgroundImg}}">
+            <div ng-view></div> 
+            <!--<div ng-include src="includeTemplate"></div>--> 
+            <!-- BEGIN MENUBAR-->
+            <div id="menubar" class="menubar-inverse {{class}} hide hidden-print">
+                <div class="site_name">
+                    EHR
+                </div>
+                <div class="menubar-fixed-panel">
+                    <div>
+                        <a class="btn btn-icon-toggle btn-default menubar-toggle" data-toggle="menubar" href="javascript:void(0);">
+                            <i class="fa fa-bars"></i>
+                        </a>
+                    </div>
+                    <div class="expanded">
+                        <a href="#/dashboard">
+                            <span class="text-lg text-bold text-primary ">MATERIAL&nbsp;ADMIN</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="menubar-scroll-panel">
+
+                    <!-- BEGIN MAIN MENU -->
+                    <ul id="main-menu" class="gui-controls">
+
+                        <!-- BEGIN DASHBOARD -->
+                        <li>
+                            <a href="#/dashboard">
+                                <div class="gui-icon"><i class="md md-dashboard"></i></div>
+                                <span class="title">Dashboard</span>
+                            </a>
+                        </li><!--end /menu-li -->
+                        <!-- END DASHBOARD -->
+                        <!-- BEGIN DASHBOARD -->
+                        <!-- <li>
+                            <a href="../../html/layouts/builder.html" >
+                                <div class="gui-icon"><i class="md md-chat"></i></div>
+                                <span class="title">Messages</span>
+                            </a>
+                        </li> --><!--end /menu-li -->
+                        <li class="gui-folder" ng-hide="ROLES.Patient == undefined">
+                            <a>
+                                <div class="gui-icon"><i class="md md-person-add"></i></div>
+                                <span class="title">Patient</span>
+                            </a>
+                            <ul>
+                                <li ng-hide="ROLES.Patient == undefined"><a href="#/patient-listing"><span class="title">Patient listing</span></a></li>
+                                <li ng-hide="ROLES.Patient == undefined"><a href="#/patient-registration/"><span class="title">New Patient</span></a></li>
+                            </ul>
+                        </li>
+
+                        <li ng-hide="ROLES.Encounter == undefined">
+                            <a href="#/new-encounter-patient-search">
+                                <div class="gui-icon"><i class="md md-note-add"></i></div>
+                                <span class="title">Encounters</span>
+                            </a>
+                        </li>
+                        
+                        <li class="gui-folder" ng-hide="ROLES.Lab_order == undefined">
+                            <a>
+                                <div class="gui-icon"><i class="md md-format-color-fill"></i></div>
+                                <span class="title">Lab Orders</span>
+                            </a>
+                            <ul>
+                                <li ng-hide="ROLES.Lab_order == undefined"><a href="#/lab-order-listing/"><span class="title">Lab Order Listing</span></a></li>
+                                <li ng-hide="ROLES.Lab_order == undefined"><a href="#/lab-order-history"><span class="title">Lab Order History</span></a></li>
+                            </ul>
+                        </li>
+
+                        <li class="gui-folder" ng-hide="ROLES.Appointments == undefined">
+                            <a>
+                                <div class="gui-icon"><i class="md md-assignment"></i></div>
+                                <span class="title">Appointments</span>
+                            </a>
+                            <ul>
+                                <li ng-hide="ROLES.Appointments == undefined"><a href="#/appointments-list"><span class="title">Appointment Listing</span></a></li>
+                                <li ng-hide="ROLES.Appointments == undefined"><a href="#/appointments-calander-view" ><span class="title">Appointment Calendar</span></a></li>
+                            </ul>
+                        </li>
+                        
+                        <li ng-hide="ROLES.Pool_area == undefined">
+                            <a href="#/patient-pool-area" >
+                                <div class="gui-icon"><i class="md md-local-pharmacy"></i></div>
+                                <span class="title">Patient Pool Area</span>
+                            </a>
+                        </li><!--end /menu-li -->
+                        
+                        <li class="gui-folder" ng-hide="ROLES.Ward == undefined">
+                            <a>
+                                <div class="gui-icon"><i class="md md-hotel"></i></div>
+                                <span class="title">Ward Management</span>
+                            </a>
+                            <ul>
+                                <li ng-hide="ROLES.Ward == undefined"><a href="#/ward-bed-listing"><span class="title">Ward Listing</span></a></li>
+                                <li ng-hide="ROLES.Ward == undefined"><a href="#/wards-bed-occupancy" ><span class="title">Bed Occupancy</span></a></li>
+                                <li ng-hide="ROLES.Ward == undefined"><a href="#/wards-discharge-summary" ><span class="title">Discharge Summary</span></a></li>
+                            </ul>
+                        </li>
+                        <li ng-hide="ROLES.Bill == undefined">
+                            <a href="#/billing">
+                                <div class="gui-icon"><i class="md md-attach-money"></i></div>
+                                <span class="title">Billing</span>
+                            </a>
+                        </li><!--end /menu-li -->
+                        <li class="gui-folder">
+                            <a>
+                                <div class="gui-icon"><i class="md md-assignment"></i></div>
+                                <span class="title">Reporting</span>
+                            </a>
+                            <ul>
+                                <li><a href="http://demoz.online/form_ehr/nhis_form.html"><span class="title">NHMIS Reporting</span></a></li>
+                                <li ng-hide=""><a href="#/general-reports"><span class="title">General Reporting</span></a></li>
+                            </ul>
+                        </li>
+                        <li class="gui-folder" ng-hide="ROLES.Pharmacy == undefined && ROLES.Inventory == undefined && ROLES.Pharmacy_prescription == undefined && ROLES.Stock == undefined && ROLES.Users == undefined && ROLES.Roles == undefined && ROLES.Billng_code == undefined && ROLES.Tax_rates == undefined && ROLES.Labs == 0 && ROLES.Facility == undefined && ROLES.templates == undefined">
+                            <a>
+                                <div class="gui-icon"><i class="md md-settings"></i></div>
+                                <span class="title">Settings</span>
+                            </a>
+                            <ul>
+                                <li><a href="#/settings"><span class="title">Settings Dashboard</span></a></li>
+                                <li ng-hide="ROLES.Users == undefined"><a href="#/settings-users"><span class="title">User Management</span></a></li>
+                                <li ng-hide="ROLES.Roles == undefined"><a href="#/settings-groups"><span class="title">Roles Management</span></a></li>
+                                <li ng-hide="ROLES.lab_order_templates == undefined && ROLES.clinical_notes_templates == undefined" class="gui-folder"><a><span class="title">Templates</span></a>
+                                    <ul>
+                                        <li ng-hide="ROLES.clinical_notes_templates == undefined"><a href="#/clinical-progress-template"><span class="title">Clinical note templates</span></a></li>
+                                        <li ng-hide="ROLES.lab_order_templates == undefined"><a href="#/templates"><span class="title">Lab order templates</span></a></li>
+                                    </ul>
+                                </li>
+                                <li ng-hide="ROLES.Billng_code == undefined"><a href="#/billing-codes"><span class="title">Billing codes</span></a></li>
+                                <li ng-hide="ROLES.Tax_rates == undefined"><a href="#/settings-tax-rates"><span class="title">Tax rates</span></a></li>
+                                <li ng-hide="ROLES.Inventory == undefined"><a href="#/inventory"><span class="title">Inventory management</span></a></li>
+                                <li ng-hide="ROLES.Pharmacy == undefined"><a href="#/pharmacy"><span class="title">Pharmacy management</span></a></li>
+                                <li ng-hide="ROLES.Labs == undefined"><a href="#/settings-labs"><span class="title">Lab management</span></a></li>
+                                <li ng-hide="ROLES.Facility == undefined && ROLES.Specialties == undefined"><a href="#/settings-facility"><span class="title">Facility management</span></a></li>
+                            </ul>
+                        </li>
+                        
+                        
+                        <!--                        <li>
+                            <a href="#/billing" >
+                                <div class="gui-icon"><i class="md md-my-library-books"></i></div>
+                                <span class="title">Billing</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#/pharmacy" >
+                                <div class="gui-icon"><i class="md md-local-pharmacy"></i></div>
+                                <span class="title">Pharmacy</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#/inventory" >
+                                <div class="gui-icon"><i class="md md-local-pharmacy"></i></div>
+                                <span class="title">Inventory</span>
+                            </a>
+                        </li>
+                        
+
+                        <li class="gui-folder">
+                            <a>
+                                <div class="gui-icon"><i class="md md-event"></i></div>
+                                <span class="title">Templates</span>
+                            </a>
+                            <ul>
+                                <li><a href="#/clinical-progress-template"><span class="title">Clinical Notes Template</span></a></li>
+                                <li><a href="#/templates" ><span class="title">Lab Template</span></a></li>
+                            </ul>
+                        </li>-->
+                      
+                      
+                        
+                        <!-- END EMAIL -->
+                    </ul><!--end .main-menu -->
+
+                    <!-- END MAIN MENU -->
+                    <div class="menubar-foot-panel">
+                        <small class="no-linebreak hidden-folded">
+                            <span class="opacity-75">Copyright &copy; 2016</span> <strong>EHR</strong>
+                        </small>
+                    </div>
+                </div> <!--end .menubar-scroll-panel-->
+            </div><!--end #menubar-->
+            <!-- END MENUBAR -->
+            <!-- ENCOUNTER MODAL ng-hide="encounterHeaderSearchBar"-->
+            <div class="create_counter_header headerEncounter hide">
+                <div class="counter_pop counter_pop2 custom_popup">
+                    <div class="pop_head col-lg-12">
+                        <h2 class="">Create New Encounter</h2> 
+                    </div>
+                    <div class="pop_body">
+                        <div class="alert {{headerMessageType}}" role="alert" ng-show="headerMessage">
+                            <i class="{{headerErrorSymbol}}"></i> {{headerErrorMessage}}
+                        </div>
+                        <form class="custom-form" name="encounterForm" ng-model="myForm" novalidate ng-submit="headerEncounterAdd(addEncounter);" >
+                            <div class="col-lg-12">
+                                <input class="search_field" type="text" ng-model="addEncounter.selectedPatientID" placeholder="Search by Name or Patient Id" id="findPatientEncounterHeader" data-source="{{PatientSearch}}search_patient_without_encounters" ng-disabled="true">
+                            </div>
+                            <div class="col-lg-6">
+                                <label>clinic facility / Dept</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <select class="form-control" ng-class="{true: 'error'}[headerSubmitted && encounterForm.department.$invalid]" name="department" ng-model="addEncounter.department" placeholder="Select" required>
+                                    <option value=""></option>
+                                    <!-- <option value="1">1</option>
+                                    <option value="2">2</option> -->
+                                    <option ng-repeat="department in headerEncountersDropdownData.departments" value="{{department.id}}">{{department.name}}</option>
+                                </select>
+                                <p class="help-block PIValid" ng-show="headerSubmitted && encounterForm.department.$error.required">Required</p>
+                            </div>
+
+                            <!-- <div class="col-lg-6">
+                                <label>encounter class</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <select class="form-control" ng-class="{true: 'error'}[headerSubmitted && encounterForm.class.$invalid]" name="class" ng-model="addEncounter.class" placeholder="Select" required>
+                                    <option value=""></option>
+                                    <option value="Emergency">Emergency</option>
+                                    <option value="Inpatient">Inpatient</option>
+                                    <option value="Outpatient">Outpatient</option>
+                                    <option value="Preadmit">Preadmit</option>
+                                    <option value="Recurring patient">Recurring patient</option>
+                                    <option value="Obstetrics">Obstetrics</option>
+                                </select>
+                                <p class="help-block PIValid" ng-show="headerSubmitted && encounterForm.class.$error.required">Required</p>
+                            </div> -->
+
+                            <div class="col-lg-6">
+                                <label>encounter type</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <select class="form-control" ng-class="{true: 'error'}[headerSubmitted && encounterForm.type.$invalid]" name="type" ng-model="addEncounter.type" placeholder="Select" required>
+                                    <option value=""></option>
+                                    <!-- <option ng-repeat="type in headerEncountersDropdownData.types" value="{{type.id}}">{{type.name}}</option> -->
+                                    <option value="Consultation">Consultation</option>
+                                    <option value="Surgical procedure">Surgical procedure</option>
+                                    <option value="Followup visit">Followup visit</option>
+                                    <option value="Rehabilitation">Rehabilitation</option>
+                                </select>
+                                <p class="help-block PIValid" ng-show="headerSubmitted && encounterForm.type.$error.required">Required</p>
+                            </div>
+
+                            <!-- <div class="col-lg-6">
+                                <label>whom to see</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <select class="form-control" ng-class="{true: 'error'}[headerSubmitted && encounterForm.wts.$invalid]" name="wts" ng-model="addEncounter.wts" placeholder="Select whom to see" required>
+                                    <option value=""></option>
+                                    <option ng-repeat="wts in headerEncountersDropdownData.doctors" value="{{wts.id}}">{{wts.name}}</option>
+                                </select>
+                                <p class="help-block PIValid" ng-show="headerSubmitted && encounterForm.wts.$error.required">Required</p>
+                            </div>  -->
+                            <!-- <div class="col-lg-6">
+                                <label>Reason of visit</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <textarea  ng-model="addEncounter.describeWTS"></textarea>
+                            </div>  -->
+
+                            <div class="col-lg-12">
+                                <div class="pull-right">
+                                    <button type="submit" class="btn ink-reaction button-style-1" ng-click="headerSubmitted = true;" ng-disabled="headerSubmitted && encounterForm.$invalid">create encounter</button>
+                                    <button type="button" class="btn ink-reaction button-style-1 button-style-1_a close_custom_pop" ng-click="dismissHeaderEncounterModal();">Cancel</button>
+                                </div>
+                                <img src="assets/img/loader.gif" class="pull-right encounter-loader {{headerHideLoader}}"/>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div> <!-- ENCOUNTER MODAL END -->
+        </div><!--end #base-->
+        <div class="modal fade modal-size_1" id="internetError" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header pop_head">
+                        <h2>Error</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p class="error-header">Server Error. Please check your internet connection. If the problem persists, contact system administrator.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default button-style-1" ng-click="internetError();" >Refresh</button>
+                        <button type="button" class="btn btn-default button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <div class="modal fade modal-size_1" id="rolesAccess" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header pop_head">
+                        <h2>Error</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p class="error-header">{{rolesAccessMsg}}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default button-style-1 button-style-1_a" data-dismiss="modal">OK</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+        <div dynamic='html'></div>
+        <!-- END BASE -->
+        <script src="bower_components/angular/angular.min.js"></script>
+        <script src="bower_components/oclazyload/dist/ocLazyLoad.min.js"></script>
+        <script src="bower_components/angular-filter.min.js"></script>
+        <script src="bower_components/ui-bootstrap-tpls-0.12.0.js"></script>
+        <script src="bower_components/webcam.js"></script>
+        <script src="bower_components/angularcamera.js"></script>
+        <script src="assets/js/libs/angular/angular-route.js"></script>
+        <script src="assets/js/libs/angular/ng-file-upload-shim.js"></script>
+        <script src="assets/js/libs/angular/ng-file-upload.js"></script>
+        <script src="assets/js/libs/angular/angular-resource.min.js"></script>
+        <script src="assets/js/libs/scrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
+        <script src="app.js"></script>
+        <script src="global/config.js"></script>
+        <script src="global/factories.js"></script>
+        <script src="global/directives.js"></script>
+        <!-- <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.9.1/fullcalendar.min.css"></script> -->
+        <script data-require="angular-sanitize@1.2.25" data-semver="1.2.25" src="bower_components/angular-sanitize.js"></script>
+        <link data-require="angular-form-gen@0.0.1" data-semver="0.0.1" rel="stylesheet" href="bower_components/angular-form-gen.min.css" />
+        <script data-require="angular-form-gen@0.0.1" data-semver="0.0.1" src="assets/js/libs/angular-form-gen/angular-form-gen.js"></script>
+        <script data-require="showdown@0.3.*" data-semver="0.3.1" src="bower_components/showdown.min.js"></script>
+        <script data-require="angular-markdown-text@0.0.2" data-semver="0.0.2" src="bower_components/angular-markdown-text.min.js"></script>
+    </body>
+</html>

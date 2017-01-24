@@ -1,0 +1,100 @@
+<div id="content">
+    <section class="user-profile">
+        <div class="row">
+            <div class="col-lg-12 margin-top-20">
+                <div class="alert {{message.type}} fade in margin-left-20 margin-right-20" role="alert" ng-show="message.text">
+                    <a href="javascript:;" class="close" ng-click="dismissAlert()">&times;</a>
+                    {{message.text}}
+                </div>
+
+                <div class="col-lg-3 text-center">
+                    <img src="assets/img/imgpsh_fullsize.jpeg" class="full-image">
+                </div>
+                <div class="col-lg-9">
+                    <label class="label-style-2">Contact Information</label>
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <label>E-mail:</label>
+                        </div>
+                        <div class="col-lg-8">
+                            <label class="txt-style-4">{{userData.email}}</label>
+                        </div>
+                    </div>
+                    <label class="label-style-2">General Information</label>
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <label>First Name:</label>
+                        </div>
+                        <div class="col-lg-8">
+                            <label class="txt-style-4">{{userData.first_name}}</label>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="col-lg-2">
+                            <label>Last Name:</label>
+                        </div>
+                        <div class="col-lg-8">
+                            <label class="txt-style-4">{{userData.last_name}}</label>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="col-lg-2">
+                            <label>Name:</label>
+                        </div>
+                        <div class="col-lg-8">
+                            <label class="txt-style-4">{{userData.name}}</label>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="col-lg-2">
+                            <label>Tel Number:</label>
+                        </div>
+                        <div class="col-lg-8">
+                            <label class="txt-style-4">{{userData.telephone_number}}</label>
+                        </div>
+                    </div>
+                    <label class="label-style-2">Additional Information</label>
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <label>Role:</label>
+                        </div>
+                        <div class="col-lg-8">
+                            <label class="txt-style-4">{{userData.role_name}}</label>
+                        </div>
+                    </div>
+                    <a href="javascript:;" ng-click="showPWChangeField = true" class="btn ink-reaction button-style-1 margin-top-20" ng-disabled="showPWChangeField">Change Password</a>
+                    <form name="passwordForm" class="margin-top-20" ng-show="showPWChangeField" ng-submit="changeUserPassword()">
+                        <div class="row new-password-div">
+                            <div class="col-lg-3">
+                                <label>Current Password:</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <input type="password" ng-class="{true: 'error'}[submitted && passwordForm.password.$invalid]" name="password" ng-model="newData.password" required/>
+                                <p class="help-block PIValid" ng-show="submitted && passwordForm.password.$error.required">Required</p>
+                            </div>
+                            <div class="clearfix margin-bottom-lg" ng-class="{true: 'margin-bottom-xxl'}[submitted && passwordForm.password.$invalid]"></div>
+                            <div class="col-lg-3">
+                                <label>New Password:</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <input type="password" ng-class="{true: 'error'}[submitted && passwordForm.newPassword.$invalid]" name="newPassword" ng-model="newData.newPassword" required/>
+                                <p class="help-block PIValid" ng-show="submitted && passwordForm.newPassword.$error.required">Required</p>
+                            </div>
+                            <div class="clearfix margin-bottom-lg" ng-class="{true: 'margin-bottom-xxl'}[submitted && passwordForm.newPassword.$invalid]"></div>
+                            <div class="col-lg-3">
+                                <label>Confirm New Password:</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <input type="password" ng-class="{true: 'error'}[submitted && (passwordForm.passwordConfirm.$invalid || passwordForm.passwordConfirm.$error.pattern)]"  name="passwordConfirm" required ng-model="newData.passwordConfirm" ng-pattern="newData.newPassword"/>
+                                <p class="help-block PIValid" ng-show="submitted && passwordForm.passwordConfirm.$invalid && !passwordForm.passwordConfirm.$error.pattern">Required</p>
+                                <p class="help-block PIValid" ng-show="submitted && passwordForm.passwordConfirm.$error.pattern">Password does not match!</p>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="col-lg-7">
+                                <button class="btn btn-save ink-reaction button-style-1 pull-right margin-top-20" type="submit" ng-click="submitted = true" ng-disabled="submitted && passwordForm.$invalid">Save</button>
+                                <button type="button" ng-click="submitted = false; showPWChangeField = false;" class="btn btn-cancel ink-reaction button-style-1 pull-right margin-top-20 margin-right-10">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

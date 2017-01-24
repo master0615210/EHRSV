@@ -1,0 +1,5 @@
+/nbproject *
+.env
+/.idea
+composer.phar
+/nbproject/private/

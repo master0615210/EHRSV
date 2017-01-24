@@ -1,0 +1,313 @@
+    <div id="content">
+    <section>
+        <div class="card hidden-print">
+            <div class="table-header col-lg-12">
+                <div class="col-lg-12 no-padding">
+                    <span class="txt-style-3 pull-left text-uppercase">lab tests</span>
+                    <div class="col-lg-2 pull-right no-margin">
+                        <select class="form-control">
+                            <option>Group By</option>
+                            <option>2</option>
+                            <option>3</option>
+                        </select>
+                    </div>
+                    <div class="header-search margin-right-0 pull-left">
+                        <button type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <input class="search_field search_field_big" type="text" placeholder="Search with test name or test priority" ng-model="searchTest">
+                    </div>
+                </div>
+            </div>
+            <div class="card-body col-lg-12">
+                <div class="icons_con" ng-show="testIsSelected">
+                    <button data-toggle="modal" data-target="#addMaterial" class="add button-custom">Add Material</button>
+                    <button data-toggle="modal" data-target="#order-label" class="print button-custom">print test label</button>
+                    <button data-toggle="modal" data-target="#cancelOrder2" class="update button-custom" >update status</button><!-- ng-disabled="signoffStatus == 1" -->
+                    <button class="add-result button-custom" ng-click="go('/lab-test-report')">add result</button>
+                    <button class="report button-custom" data-toggle="modal" data-target="#previewReport" >view report</button>
+                    <!-- <button data-toggle="modal" data-target="#confirmModal" class="add button-custom" ng-disabled="signoffStatus == 1">sign off</button> -->
+                </div>
+                <div class="col-lg-12 no-padding">
+                    <table class="table table-striped no-margin table-custom">
+                        <thead>
+                            <tr>
+                                <th width='10px'></th>
+                                <th>test name</th>
+                                <th>status</th>
+                                <th>priority</th>
+                                <th>cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="labTest in selectedOrder.test| filter:search">
+                                <td align="center">
+                                    <div class="radio radio-styled">
+                                        <label>
+                                            <input type="radio" name="checked" ng-click="testSelected(labTest.lab_order_test_id);" ng-checked="selectedTest.id == labTest.lab_order_test_id">
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>{{ labTest.test_name}}</td>
+                                <td>{{ labTest.test_status}}</td>
+                                <td>{{ labTest.priority}}</td>
+                                <td>N{{ labTest.cost}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal fade modal-size_3" id="cancelOrder2" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form class="custom-form" name="updateForm" ng-model="myForm" novalidate ng-submit="updateTestForm();">
+                            <div class="modal-content">
+                                <div class="modal-header pop_head">
+                                    <h2>Update Status</h2>
+                                </div>
+                                <div class="alert {{messageType}}" role="alert" ng-show="message">
+                                    <i class="{{errorSymbol}}"></i> {{errorMessage}}
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row margin-bottom-30">
+                                        <div class="col-lg-3">
+                                            <label>lab order number</label>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <input type="text" placeholder="{{ selectedTest.id}}" disabled="" class="ng-pristine ng-untouched ng-valid ng-empty">
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <label>current status</label>
+                                        </div>
+
+                                        <div class="col-lg-3">
+                                            <input type="text" placeholder="{{ selectedTest.test_status}}" disabled="" class="ng-pristine ng-untouched ng-valid ng-empty">
+                                        </div>
+                                    </div>
+                                    <div class="row margin-bottom-30">
+                                        <div class="col-lg-3">
+                                            <label>Collection Date</label>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="input-group date select-date">
+                                                <div class="input-group-content">
+                                                    <input type="text" name="date_of_birth" ng-model="updateDate" ng-change="calculateAge(updateDate);" ng-class="{true: 'error'}[submitted && userForm1.date_of_birth.$invalid]" class="form-control" required placeholder="Pick Date" class="yellow"/>
+                                                </div>
+                                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                            </div>
+                                            <p class="help-block PIValid" ng-show="submitted && userForm1.date_of_birth.$error.required">Required</p>
+                                        </div>
+
+                                        <div class="col-lg-3">
+                                            <label>Collection Time</label>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="input-group bootstrap-timepicker col-lg-12">
+                                                <input type="text" class="form-control input-small timepicker"  ng-model="startTime" name="starttime" ng-class="{true: 'error'}[submitted && myFormAdd.starttime.$invalid]" required>
+                                                <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                            </div>
+                                            <p class="help-block PIValid" ng-show="submitted && myFormAdd.starttime.$error.required">Required</p>
+                                        </div>
+                                    </div>
+                                    <div class="row margin-bottom-xxl">
+                                        <div class="hidden-print col-lg-12 form-wizard form-wizard-horizontal margin-bottom-30">
+                                            <div class="form-wizard-nav">
+                                                <div class="progress" style="width: 85%;"><div class="progress-bar progress-bar-primary" style="width: 0%;"></div></div>
+                                                <ul class="nav nav-justified">
+                                                    <li ng-class="selectedTest.test_status == 'paid' ? 'active' : '' || selectedTest.test_status == 'sample collected' ? 'done' : '' || selectedTest.test_status == 'in progress' ? 'done' : '' || selectedTest.test_status == 'completed' ? 'done' : '' || selectedTest.test_status == 'signed' ? 'done' : '' || selectedTest.test_status == 'result completed' ? 'done' : ''"><a href="javascript:;"><span class="step">1</span> <span class="title" data-val="paid" data-id="1">paid</span></a></li>
+                                                    <li ng-class="selectedTest.test_status == 'sample collected' ? 'active' : '' || selectedTest.test_status == 'in progress' ? 'done' : '' || selectedTest.test_status == 'completed' ? 'done' : '' || selectedTest.test_status == 'signed' ? 'done' : '' || selectedTest.test_status == 'result completed' ? 'done' : ''"><a href="javascript:;"><span class="step">2</span> <span class="title" data-val="sample collected" data-id="2">sample <br />collected</span></a></li>
+                                                    <li ng-class="selectedTest.test_status == 'in progress' ? 'active' : '' || selectedTest.test_status == 'completed' ? 'done' : '' || selectedTest.test_status == 'signed' ? 'done' : '' || selectedTest.test_status == 'result completed' ? 'done' : ''"><a href="javascript:;"><span class="step">3</span> <span class="title" data-val="in progress" data-id="3">test in <br />progress</span></a></li>
+                                                    <li ng-class="selectedTest.test_status == 'result completed' ? 'active' : '' || selectedTest.test_status == 'completed' ? 'done' : '' || selectedTest.test_status == 'signed' ? 'done' : ''"><a href="javascript:;"><span class="step">4</span> <span class="title" data-val="result completed" data-id="4">result <br />completed</span></a></li>
+                                                    <li ng-class="selectedTest.test_status == 'signed' ? 'active' : '' || selectedTest.test_status == 'completed' ? 'done' : ''"><a href="javascript:;"><span class="step">5</span> <span class="title" data-val="signed" data-id="5">signed</span></a></li>
+                                                    <li ng-class="selectedTest.test_status == 'completed' ? 'active' : ''"><a href="javascript:;"><span class="step">6</span> <span class="title" data-val="completed" data-id="6">completed</span></a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-default button-style-1" ng-click="submitted = true;" ng-disabled="updateTestBtn">Save</button>
+                                    <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal" ng-disabled="updateTestBtn">Cancel</button>
+                                </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div><!--end .card-body -->
+</section>
+</div><!--end .card -->
+<div class="modal fade modal-size_2" id="addMaterial" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Add Material</h2>
+            </div>
+            <div class="modal-body">
+                <form class="custom-form">
+                <div class="row margin-bottom-xxl">
+                    <div class="col-lg-2">
+                        <label>Add Material</label>
+                    </div>
+                    <div class="col-lg-9 select-con" id="selectInventory">
+                        <select class="select_searchFields form-control" placeholder="Select Material" ng-model="prod_cat_name" ng-options="inventory.cat_name for inventory in allProdByCat track by inventory.id">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                     <div class="col-lg-1">
+                         <span class="plus" ng-click="addMaterial()"><i class="md-add"></i></span>
+                                    </div>
+                </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-2">
+                            <label>Quantity</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input class="form-control" ng-model="prod_quantity" type="text" placeholder="01" numbers-only>
+                        </div>
+                    </div>
+                <div class="row" ng-show="addedMaterial.length > 0">
+                    <table class="table table-striped no-margin table-custom">
+                        <thead>
+                            <tr>
+                                <th>Material</th>
+                                <th>Cost</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!--ng-repeat=""-->
+                            <tr ng-repeat="add in addedMaterial">
+                                <td>{{add.material}}</td>
+                                <td>{{add.cost}}</td>
+                                <td>{{add.quantity}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                    </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal" ng-click="addMaterials()" ng-disabled="addedMaterial.length == 0">sAVE</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+    <div class="modal fade modal-size_1" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header pop_head">
+                    <h2>Status</h2>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-subtext">Do you want to Sign Off this Report?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default button-style-1 button-style-1_a" ng-click="doSignOff();">YES</button>
+                    <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">NO</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <div class="modal fade modal-size_1" id="successSignoff" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header pop_head">
+                    <h2>Status</h2>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-subtext">Report Successfully Signed off</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">Ok</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <div class="modal fade modal-size_1" id="previewReport"  tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header pop_head">
+                    <h2>Sign Off Report</h2>
+                </div>
+                <div class="modal-body col-lg-12 modal-body-2 modal-body-2_a" style="height: 500px;width: 100%;">
+                    <div class="icons_con pull-right no-margin">
+                        <button class="update button-custom" ng-disabled="signoffStatus == 1" data-dismiss="modal">update report</button>
+                    </div>
+                    <div class="showPdf"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default button-style-1" ng-click="doSignOff();" data-dismiss="modal" ng-disabled="signoffStatus == 1">SIGNOFF</button>
+                    <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">Cancel</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
+    <div class="modal fade modal-size_1" id="order-label" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content pull-left">
+                    <div class="modal-header pop_head">
+                        <h2>Lab Order label</h2>
+                    </div>
+                    <div class="modal-body pull-left label-style-con modal-body-2">
+                        <form class="custom-form">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label>Patient Name</label>
+                                    <label class="txt-style-4 margin-bottom-xxl">{{ selectedOrder.patient_name}}</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>Patient ID</label>
+                                    <label class="txt-style-4 margin-bottom-xxl">{{ selectedOrder.patient_id}}</label>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <label>Gender</label>
+                                    <label class="txt-style-4 margin-bottom-xxl">{{ selectedOrder.gender}}</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>Order Number</label>
+                                    <label class="txt-style-4 margin-bottom-xxl">{{ selectedOrder.id}}</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>Test ID</label>
+                                    <label class="txt-style-4 margin-bottom-xxl">{{ selectedOrder.id}}</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>Test name</label>
+                                    <label class="txt-style-4 margin-bottom-xxl" ng-repeat="t in selectedOrder.test">{{ t.test_name }}</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label class="margin-bottom-xxl">Collected By: {{selectedOrder.created_at | date:'MMM dd, yyyy hh:mm a'}}</label>
+                                </div>
+                                <!--<div class="col-lg-6">
+                                    <label>Collection Date</label>
+                                    <label class="txt-style-4 margin-bottom-xxl">Jan 09, 2016</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>Collection Time</label>
+                                    <label class="txt-style-4">00:00:00</label>
+                                </div>-->
+                                <div class="col-lg-6">
+                                    <img src="assets/img/bar_code.jpg" alt="" ng-show="visibleImg"/>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer col-lg-12 hidden-print">
+                        <div class="pull-left">
+                            <div class="checkbox checkbox-styled pull-left">
+                                <label>
+                                    <input type="checkbox" value="" ng-model="insertbarcode" ng-click="insertBarcode(insertbarcode);">
+                                    <span>Insert Barcode</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="pull-right">
+                            <button type="button" ng-click="openPrint()" class="btn btn-default button-style-1" ng-hide="ROLES.Lab_test == undefined || ROLES.Lab_order.update_right == '0'">Print</button>
+                            <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->

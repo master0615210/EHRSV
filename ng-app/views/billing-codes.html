@@ -1,0 +1,367 @@
+<div id="content">
+    <section>
+        <div class="card">
+            <div class="card-head col-lg-9 no-padding card-head-auto">
+                <ul class="nav nav-tabs nav-justified custom-tab" data-toggle="tabs">
+                    <li class="active"><a showtab href="#billing_codes">Billing Codes</a></li>
+                    <li><a showtab href="#category">Category</a></li>
+                </ul>
+            </div><!--end .card-head -->
+            <div class="card-body tab-content col-lg-12 custom-card-body">
+                <div class="tab-pane active" id="billing_codes">
+                    <div class="table-header row background-none margin-bot-70">
+                        <div class="col-lg-12 pdng-0">
+                            <h3 class="billing_hdng capitalize">Service billing codes & charges</h3>
+                        </div>
+                        <div class="pull-right">
+                            <button class="add button-custom pull-right" data-toggle="modal" data-target="#addcode">New Code</button>
+                        </div>
+                        <span class="txt-style-3 pull-left text-uppercase">codes</span>
+                        <div class="col-lg-2">
+                            <select class="form-control">
+                                <option>All</option>
+                                <option>Cheque</option>
+                                <option>type 3</option>
+                            </select>
+                        </div>
+                        <div class="pull-right">
+                            <div class="header-search pull-left margin-top-10">
+                                <button type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                                <input class="search_field" ng-model="search" type="text" placeholder="Search Template">
+                            </div>
+                        </div>
+                    </div>
+                    <form class="custom-form">
+                        <table class="table table-striped no-margin table-custom table-custom_big billing_table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Code</th>
+                                    <th>Charge</th>
+                                    <th>Category</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="BillingCode in BillingCodeLists| filter:{code:search}">
+                                    <td>{{BillingCode.description}}</td>
+                                    <td>{{BillingCode.code}}</td>
+                                    <td>{{BillingCode.charge}}</td>
+                                    <td>{{BillingCode.category}}</td>
+                                    <td>
+                                        <div class="billing_actions"><a href="javascript:;" class="setting-button"></a>
+                                            <div class="tool-tip_popup">
+                                                <a href="javascript:;" ng-click="billingCodeDetail(BillingCode.id)">Edit</a>
+                                                <a href="javascript:;" ng-click="confirmRemoveBillingCode(BillingCode.id)">Delete</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="pagination pagination-centered pull-right" ng-show="billingCodesCount">
+                            <ul class="pagination-controle pagination">
+                                <li class="prev-page">
+                                    <button type="button" class="btn btn-primary" ng-disabled="curPage == 0" ng-click="curPage = curPage-1; paginationPrev(pageSize, curPage);"><i class="fa fa-caret-left"></i></button>
+                                </li>
+                                <li>
+                                    <span class="pagination-detail">Page <input type="text" width="5px" ng-model="pageNumber" numbers-only value="{{curPage + 1}}" placeholder="Page Number"/><span class="space-both-side">of</span>{{ numberOfPages() }}</span>
+                                </li>
+                                <li class="next-page">
+                                    <button type="button" class="btn btn-primary" ng-disabled="curPage >= billingCodesCount/pageSize - 1" ng-click="curPage = curPage+1; paginationNext(pageSize, curPage);"><i class="fa fa-caret-right"></i></button>
+                                </li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane" id="category">
+                    <div class="table-header row background-none">
+                        <div class="pull-right">
+                            <button class="add button-custom pull-right" data-toggle="modal" data-target="#addcategory">New Category</button>
+                        </div>
+                        <div class="pull-right">
+                            <div class="header-search pull-left margin-top-10">
+                                <button type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                                <input class="search_field" ng-model="searchCat" type="text" placeholder="Search Category">
+                            </div>
+                        </div>
+                    </div>
+                    <form class="custom-form">
+                        <table class="table table-striped no-margin table-custom table-custom_big setting_table_cat">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="Category in CategoryLists| filter:{name:searchCat}"><!--  |filter:code -->
+                                    <td>{{ Category.name }}</td>
+                                    <td>
+                                        <span>{{ Category.description }}</span>
+                                        <div class="settings_actions"><a href="javascript:;" class="setting-button"></a>
+                                            <div class="tool-tip_popup">
+                                                <a href="javascript:;" ng-click="billingCategoryDetail(Category.id)">Edit</a>
+                                                <a href="javascript:;" ng-click="confirmRemoveBillingCategory(Category.id)">Delete</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="pagination pagination-centered pull-right" ng-show="CategoriesCount">
+                            <ul class="pagination-controle pagination">
+                                <li class="prev-page">
+                                    <button type="button" class="btn btn-primary" ng-disabled="curPage == 0" ng-click="curCatPage = curCatPage-1; paginationPrevCategories(pageSize, curCatPage);"><i class="fa fa-caret-left"></i></button>
+                                </li>
+                                <li>
+                                    <span class="pagination-detail">Page <input type="text" width="5px" ng-model="pageNumber" numbers-only value="{{curCatPage + 1}}" placeholder="Page Number"/><span class="space-both-side">of</span>{{ numberOfPagesCategories() }}</span>
+                                </li>
+                                <li class="next-page">
+                                    <button type="button" class="btn btn-primary" ng-disabled="curCatPage >= CategoriesCount/pageSize - 1" ng-click="curCatPage = curCatPage+1; paginationNextCategories(pageSize, curCatPage);"><i class="fa fa-caret-right"></i></button>
+                                </li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+            </div><!--end .card-body -->
+        </div><!--end .card -->
+    </section>
+</div>
+<div class="modal fade modal-size_1" id="addcode" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Add Code</h2>
+            </div>
+            <div class="modal-body">
+                <form class="custom-form" name="userForm1" ng-model="myForm" novalidate ng-submit="createBillingCode(billingCodeData);">
+                    <div class="row">
+                        <div class="alert {{messageType}} margin-bottom-xxl" role="alert" ng-show="message">
+                            <i class="{{errorSymbol}}"></i> {{errorMessage}}
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-3">
+                            <label>Name</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <input type="text" placeholder="" name="description" ng-model="billingCodeData.description" ng-class="{true: 'error'}[submitted && userForm1.description.$invalid]" required>
+                            <p class="help-block PIValid" ng-show="submitted && userForm1.description.$error.required">Required</p>
+                        </div>
+                        <div class="col-lg-3">
+                            <label>Code</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <input type="text" placeholder="" ng-class="{true: 'error'}[submitted && userForm1.code.$invalid]"  name="code" required  ng-model="billingCodeData.code" />
+                            <p class="help-block PIValid" ng-show="submitted && userForm1.code.$error.required">Required</p>
+                        </div>
+                    </div>                    
+                     <div class="row margin-bottom-xxl">
+                        <div class="col-lg-3">
+                            <label>Charge</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <input type="text" placeholder="" ng-class="{true: 'error'}[submitted && userForm1.charge.$invalid]" name="charge" required  ng-model="billingCodeData.charge" class="maskCost" />
+                            <p class="help-block PIValid" ng-show="submitted && userForm1.charge.$error.required">Required</p>
+                        </div>
+                        <div class="col-lg-3">
+                            <label>Category</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <select class="form-control" ng-model="billingCodeData.category_id" placeholder="Select" name="category" ng-class="{true: 'error'}[submitted && userForm1.category.$invalid]" required>
+                                <option value=""></option>
+                                <option ng-repeat="d in AllCategoryLists" value="{{ d.id }}">{{ d.name }}</option>
+                            </select>
+                            <p class="help-block PIValid" ng-show="submitted && userForm1.category.$error.required">Required</p>
+                        </div>
+                     </div>
+                    <div class="modal-footer">
+                        <div class="row margin-bottom-xxl">
+                            <button type="submit" class="btn btn-default button-style-1" ng-click="submitted = true;" ng-disabled="submitted && userForm1.$invalid">Add</button>
+                            <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal" ng-disabled="addBillingCodeBtn">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="editcode" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Edit Code</h2>
+            </div>
+            <div class="modal-body">
+                <form class="custom-form" name="userForm2" ng-model="myForm" novalidate ng-submit="updateBillingCode(editBillingCodeData);">
+                    <div class="row margin-bottom-xxl">
+                        <div class="alert {{messageType}}" role="alert" ng-show="message">
+                            <i class="{{errorSymbol}}"></i> {{errorMessage}}
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-3">
+                            <label>Name</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <input type="text" placeholder="" name="description" ng-model="editBillingCodeData.description" ng-class="{true: 'error'}[submitted && userForm2.description.$invalid]" required>
+                            <p class="help-block PIValid" ng-show="submitted && userForm2.description.$error.required">Required</p>
+                        </div>
+                        <div class="col-lg-3">
+                            <label>Code</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <input type="text" placeholder="" ng-class="{true: 'error'}[submitted && userForm2.code.$invalid]"  name="code" required  ng-model="editBillingCodeData.code" />
+                            <p class="help-block PIValid" ng-show="submitted && userForm2.code.$error.required">Required</p>
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-3">
+                            <label>Charge</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <input type="text" placeholder="" ng-class="{true: 'error'}[submitted && userForm2.charge.$invalid]" name="charge" required  ng-model="editBillingCodeData.charge" class="maskCost" />
+                            <p class="help-block PIValid" ng-show="submitted && userForm2.charge.$error.required">Required</p>
+                        </div>
+                        <div class="col-lg-3">
+                            <label>Category</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <select class="form-control" ng-model="editBillingCodeData.category_id" placeholder="Select" name="category" ng-class="{true: 'error'}[submitted && userForm2.category.$invalid]" required>
+                                <option value=""></option>
+                                <option ng-repeat="d in AllCategoryLists" value="{{ d.id }}">{{ d.name }}</option>
+                            </select>
+                            <p class="help-block PIValid" ng-show="submitted && userForm2.category.$error.required">Required</p>
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+
+                        
+
+                        <!-- <div class="col-lg-3">
+                            <label>Tax</label>
+                        </div>
+                        <div class="col-lg-3">
+                            <select class="form-control" ng-model="editBillingCodeData.tax" placeholder="Select" name="tax" ng-class="{true: 'error'}[submitted && userForm2.tax.$invalid]" required>
+                                <option value=""></option>
+                                <option ng-repeat="k in TaxRatesLists" value="{{ k.id }}" ng-selected="k.id == editBillingCodeData.tax">{{ k.name }} ({{ k.rate }})</option>
+                            </select>
+                            <p class="help-block PIValid" ng-show="submitted && userForm2.tax.$error.required">Required</p>
+                        </div> -->
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row margin-bottom-xxl">
+                            <button type="submit" class="btn btn-default button-style-1" ng-click="submitted = true;" ng-disabled="submitted && userForm2.$invalid">Edit</button>
+                            <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal" ng-disabled="updateBillingCodeBtn">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="confirmation" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Confirmation</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Do you want to Delete?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-toggle="modal" ng-click="removeBillingCode();"  data-dismiss="modal" ng-show="deleteBillingCodeId">Ok</button>
+                <button type="button" class="btn btn-default button-style-1" data-toggle="modal" ng-click="removeBillingCategory();"  data-dismiss="modal" ng-show="deleteBillingCategoryId">Ok</button>
+                <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal" ng-click="cancelDelete();">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="addcategory" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Add Billing Category</h2>
+            </div>
+            <div class="modal-body">
+                <form class="custom-form" name="userForm3" ng-model="myForm" novalidate ng-submit="createBillingCategory(billingCategoryData);">
+                    <div class="row margin-bottom-xxl">
+                        <div class="alert {{messageType}}" role="alert" ng-show="message">
+                            <i class="{{errorSymbol}}"></i> {{errorMessage}}
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-3">
+                            <label>Category Name</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" placeholder="" ng-class="{true: 'error'}[submitted && userForm3.name.$invalid]"  name="name" required  ng-model="billingCategoryData.name" />
+                            <p class="help-block PIValid" ng-show="submitted && userForm3.name.$error.required">Required</p>
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-12">
+                            <label>Description</label>
+                        </div>
+                        <div class="col-lg-12">
+                            <textarea placeholder="Write Here..." name="description" ng-model="billingCategoryData.description" ng-class="{true: 'error'}[submitted && userForm3.description.$invalid]" required></textarea>
+                            <p class="help-block PIValid" ng-show="submitted && userForm3.description.$error.required">Required</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-default button-style-1" ng-click="submitted = true;" ng-disabled="submitted && userForm3.$invalid">Add</button>
+                        <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal" ng-disabled="addBillingCategoryBtn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="editcategory" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Edit Billing Category</h2>
+            </div>
+            <div class="modal-body">
+                <form class="custom-form" name="userForm4" ng-model="myForm" novalidate ng-submit="updateBillingCategory(editBillingCategoryData);">
+                    <div class="row margin-bottom-xxl">
+                        <div class="alert {{messageType}}" role="alert" ng-show="message">
+                            <i class="{{errorSymbol}}"></i> {{errorMessage}}
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-3">
+                            <label>Category Name</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" placeholder="" ng-class="{true: 'error'}[submitted && userForm4.name.$invalid]"  name="name" required  ng-model="editBillingCategoryData.name" />
+                            <p class="help-block PIValid" ng-show="submitted && userForm4.name.$error.required">Required</p>
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-12">
+                            <label>Description</label>
+                        </div>
+                        <div class="col-lg-12">
+                            <textarea placeholder="Write Here..." name="description" ng-model="editBillingCategoryData.description" ng-class="{true: 'error'}[submitted && userForm4.description.$invalid]" required></textarea>
+                            <p class="help-block PIValid" ng-show="submitted && userForm4.description.$error.required">Required</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-default button-style-1" ng-click="submitted = true;" ng-disabled="submitted && userForm4.$invalid">Edit</button>
+                        <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal" ng-disabled="updateBillingCategoryBtn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

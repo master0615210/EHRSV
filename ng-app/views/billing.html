@@ -1,0 +1,1625 @@
+<div id="content">
+    <section>
+        <div class="card" ng-class="{true: 'custom-card'}[patientInfo]">
+            <div class="card-head card-head-custom {{hospital_plan}} billing hidden-print" ng-show="patientInfo">
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Patient Name</label>
+                    <span class="txt-style-2 col-lg-12 capitalize">{{selectedPatient.first_name}} {{selectedPatient.last_name}}</span>
+                </div>
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Patient Number</label>
+                    <span class="txt-style-2 col-lg-12">{{selectedPatient.id}}</span>
+                </div>
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Age</label>
+                    <span class="txt-style-2 col-lg-12">{{selectedPatient.age}}</span>
+                </div>
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Sex</label>
+                    <span class="txt-style-2 col-lg-12 capitalize">{{selectedPatient.sex}}</span>
+                </div>
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">marital status</label>
+                    <span class="txt-style-2 col-lg-12 capitalize">{{selectedPatient.marital_status}}</span>
+
+                </div>
+                <div class="col-lg-2">
+                    <a href="#/billing/{{patient_id}}" class="button-style-2">
+                        <img src="assets/img/content_icn_blue.png" />
+                    </a>
+                    <!-- <a href="javascript:;" class="button-style-2">
+                        <img src="assets/img/assign_blue.png" />
+                    </a> -->
+                    <a href="javascript:void(0);" data-target="#checkout" data-toggle="modal" class="button-style-2">
+                        <img src="assets/img/discharge_icn_blue.png" />
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-head col-lg-12 no-padding card-head-auto hidden-print">
+                <ul class="nav nav-tabs nav-justified custom-tab" data-toggle="tabs">
+                    <li id="billing" class="active"><a showtab href="#generate"> Bills</a></li>
+                    <li ng-class="{true: 'disabled-tabs'}[disable_tabs]" id="invoicing"><a showtab href="#invoices">Invoices</a></li>
+                    <li ng-class="{true: 'disabled-tabs'}[disable_tabs]" class="disabled-tabs"><a showtab href="#reports">Reports</a></li>
+                </ul>
+            </div>
+
+
+
+            <div class="card-body tab-content col-lg-12 custom-card-body">
+
+
+
+                <div class="tab-pane active" id="generate">
+
+                    <div class="table-header row background-none">
+
+                        <div class="pull-right">
+                            <div class="header-search billing_search pull-left margin-right-0">
+                                <button type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                                <input class="search_field" type="text" placeholder="Patient Name or Id" ng-model="search_all_bill" ng-change="searchBillsByPatient(search_all_bill);">
+                            </div>
+                        </div>
+                        <div class="pull-right col-lg-7">
+                            <div class="pull-right col-lg-3">
+                                <div class="input-group date select-date">
+                                    <div class="input-group-content">
+                                        <input type="text" class="form-control" placeholder="Select Date"  ng-model="periodDate" ng-change="dateSearchPeirod(periodDate);">
+                                    </div>
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                            <div class="pull-right">
+                                <span class="txt-style-3 pull-left text-uppercase billing_period">period</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-header row background-none">
+                        <div class="pull-right">
+                            <button class="add button-custom pull-right" ng-click="ViewBillInvoices(bill_id)">View Invoices</button>
+                            <button class="add button-custom pull-right" ng-click="patientName = undefined;" data-toggle="modal" data-target="#patientRegBill">New Patient</button>
+                            <button class="add button-custom pull-right" data-toggle="modal" data-target="#WaiveBill" ng-hide="disable_tabs">Waive Bill</button>
+                            <!--    <button class="add button-custom pull-right" data-toggle="modal" data-target="#addtemplate">Billing Not Required</button>
+
+                              <button class="add button-custom pull-right" data-toggle="modal" data-target="#addtemplate">Invoice Without Consultation</button>
+                              <button class="add button-custom pull-right" data-toggle="modal" data-target="#addtemplate">New Invoice</button>
+                            -->
+                        </div>
+                        <span class="txt-style-3 pull-left text-uppercase">Plan</span>
+                        <div class="col-lg-2">
+                            <select class="form-control" ng-model="search_plan_bill" placeholder="Select" ng-change="billSortingByPlan(search_plan_bill);">
+                                <option value=""></option>
+                                <option value="all">All</option>
+                                <option value="self">Private</option>
+                                <option value="NHIS">NHIS</option>
+                                <option value="Retainers">Retainers</option>
+                                <option value="FHSS">FHSS</option>
+                            </select>
+                        </div>
+                        <span class="txt-style-3 pull-left text-uppercase">Purpose</span>
+                        <div class="col-lg-2">
+                            <select class="form-control" ng-model="searchPurpose" placeholder="Select" ng-change="billSortingByPurpose(searchPurpose);">
+                                <option value=""></option>
+                                <option value="all">All</option>
+                                <option value="new_patient">New Patient</option>
+                                <option value="encounter">Encounter</option>
+                            </select>
+                        </div>
+                    </div>
+                    <form class="custom-form">
+                        <table class="table table-striped no-margin table-custom table-custom_big setting_table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Bill ID</th>
+                                    <th>Date</th>
+                                    <th>Encounter No</th>
+                                    <th>patient ID</th>
+                                    <th>patient name</th>
+                                    <th>bill purpose</th>
+                                    <th>patient plan</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="Bill in BillListings">
+                                    <td align="center">
+                                        <div class="radio radio-styled">
+                                            <label>
+                                                <input type="radio" ng-click="SelectedPatient(Bill.patient_id, Bill.id, Bill.bill_status)" name="optionsRadios" value="option1"><span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>B{{Bill.id}}</td>
+                                    <td>{{Bill.created_at}}</td>
+                                    <td>{{Bill.encounter_id == "" ? "-" : "E"+Bill.encounter_id}}</td>
+                                    <td><span ng-if="Bill.patient_id == ''"><a class="blue" href="javascript:;">-</a></span>
+                                    <span ng-if="Bill.patient_id != ''"><a class="blue" href="#/patient-summary-demographics/{{Bill.patient_id}}">{{Bill.patient_id == "" ? "-" : "P"+Bill.patient_id}}</a></span></td>
+                                    <td class="capitalize">{{Bill.first_name}}</td>
+                                    <td class="capitalize">{{Bill.bill_purpose}}</td>
+                                    <td class="capitalize">{{Bill.name}}</td>
+                                    <td class="{{Bill.bill_status}}">{{Bill.bill_status}}</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div class="pagination pagination-centered pull-right" ng-show="billCount">
+                        <ul class="pagination-controle pagination">
+                            <li class="prev-page">
+                                <button type="button" class="btn btn-primary" ng-disabled="curPage == 0" ng-click="curPage=curPage-1; paginationPrev(pageSize, curPage);"><i class="fa fa-caret-left"></i></button>
+                            </li>                            
+                            <li>
+                                <span class="pagination-detail">Page <input type="text" width="5px" ng-model="pageNumber" numbers-only value="{{curPage + 1}}" placeholder="Page Number"/><span class="space-both-side">of</span>{{ numberOfPages() }}</span>
+                            </li>
+                             <li class="next-page">
+                              <button type="button" class="btn btn-primary" ng-disabled="curPage >= billCount/pageSize - 1" ng-click="curPage = curPage+1; paginationNext(pageSize, curPage);"><i class="fa fa-caret-right"></i></button>
+                            </li>
+                        </ul>
+                    </div>
+                    </form>
+                </div>
+
+                <div class="tab-pane" id="invoices">
+
+                    <div class="invoice_list">
+
+                        <div class="table-header row background-none">
+                            <div class="col-lg-3 col-lg-offset-7">
+                                <div class="col-lg-3">
+                                    <span class="txt-style-3 pull-left text-uppercase billing_period">Status</span>
+                                </div>
+                                <div class="col-lg-9">
+                                    <select class="form-control" ng-model="search_status" >
+                                        <option value="">All</option>
+                                        <option>Draft</option>
+                                        <option>Paid</option>
+                                        <option>Pending</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="header-search billing_search pull-left">
+                                    <button type="submit">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                    <input class="search_field" type="text" placeholder="Patient Name or Id" ng-model="search_all">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-header row background-none">
+                            <div class="pull-right">
+                                <button class="delete button-custom pull-right" data-toggle="modal" data-target="#deleteConfirm" ng-hide="deleteInvoiceButton">Remove Invoice</button>
+                                <!-- <button class="add button-custom pull-right btn_edit_invoice">Edit Invoice</button>-->
+                                <button class="process button-custom pull-right" data-toggle="modal" ng-click="prcessingPaymentClick(invoice_id)">Process Payment</button>
+                                <button class="print button-custom pull-right" ng-click="PrintInvoice(invoice_id)" >Print Invoice</button>
+                                <button class="send button-custom pull-right" data-toggle="modal" ng-click="SendInvoiceModal(invoice_id)">Send Invoice</button>
+                                <button class="add button-custom pull-right" data-toggle="modal" data-target="#addToBill">Add to Bill</button>
+                                <button class="add button-custom pull-right" data-toggle="modal" data-target="#WaiveBillInvoice" ng-hide="deleteInvoiceButton">Waive Invoice</button>
+                            </div>
+                            <!-- <span class="txt-style-3 pull-left text-uppercase">Plan</span> -->
+                            <div class="col-lg-2">
+                                <!-- <select class="form-control" ng-model="search_plan">
+                                    <option selected >Self</option>
+                                    <option>NHIS</option>
+                                    <option>Retainers</option>
+                                </select> -->
+                            </div>
+                        </div>
+
+
+                        <form class="custom-form">
+                            <div class="no-res-found" ng-if="InvoiceListings.length == ''">
+                                        No Result Found
+                            </div>
+                            <table ng-if="InvoiceListings.length != ''" class="table table-striped no-margin table-custom table-custom_big setting_table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Date</th>
+                                        <th>Invoice No</th>
+                                        <!-- <th>patient ID</th>
+                                        <th>patient name</th>
+                                        <th>patient plan</th> -->
+                                        <th>purpose</th>
+                                        <th>amount</th>
+                                        <th>due</th>
+                                        <th>status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="Invoice in InvoiceListings|filter:search_all |filter:search_plan |filter:search_status">
+                                        <td align="center">
+                                            <div class="radio radio-styled">
+                                                <label>
+                                                    <input type="radio" id="radio-{{Invoice.id}}" ng-click="SelectedPatientWithInvoice(Invoice.patient_id, Invoice.id, Invoice.amount, Invoice.invoice_status)" name="optionsRadios"><span></span>
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>{{Invoice.created_at}}</td>
+                                        <td>{{Invoice.id}}</td>
+                                        <!-- <td><a class="blue" href="#/patient-summary-demographics/{{Invoice.patient_id}}">P{{Invoice.patient_id}}</a></td>
+                                        <td>{{Invoice.first_name}}</td>
+                                        <td>{{Invoice.plan_name}}</td> -->
+                                        <td>{{Invoice.description}}</td>
+                                        <td>{{Invoice.amount}}</td>
+                                        <td>{{Invoice.due}}</td>
+                                        <td class="{{Invoice.invoice_status}}">{{Invoice.invoice_status| capitalize}}</td>
+
+
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                            <div class="pagination pagination-centered pull-right" ng-show="BillInvoicesCount">
+                                <ul class="pagination-controle pagination">
+                                    <li class="prev-page">
+                                        <button type="button" class="btn btn-primary" ng-disabled="curPageInvoices == 0" ng-click="curPageInvoices = curPageInvoices-1; paginationPrevI(pageSizeInvoices, curPageInvoices);"><i class="fa fa-caret-left"></i></button>
+                                    </li>
+                                    <li>
+                                        <span class="pagination-detail">Page <input type="text" width="5px" ng-model="pageNumberInvoices" numbers-only value="{{curPageInvoices + 1}}" placeholder="Page Number"/><span class="space-both-side">of</span>{{ numberOfPagesInvoices() }}</span>
+                                    </li>
+                                    <li class="next-page">
+                                        <button type="button" class="btn btn-primary" ng-disabled="curPageInvoices >= BillInvoicesCount/pageSizeInvoices - 1" ng-click="curPageInvoices = curPageInvoices+1; paginationNextI(pageSizeInvoices, curPageInvoices);"><i class="fa fa-caret-right"></i></button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </form>
+                    </div>
+
+
+                    <div class="edit_invoice">
+                        <div class="table-header row background-none">
+                            <div class="pull-right">
+                                <button class="add button-custom pull-right" data-toggle="modal" data-target="#">Add Procedure from master list</button>
+                                <button class="add button-custom pull-right" data-toggle="modal" data-target="#">Add Product from master list</button>
+
+                            </div>
+                            <h2>Invoice Summary</h2>
+                        </div>
+                        <form class="custom-form">
+                            <div class="row edit_inv_row_hdng">
+                                <div class="col-lg-4">
+                                    <span>Description</span>
+                                </div>
+                                <div class="col-lg-1 code_col">
+                                    <span>Code</span>
+                                </div>
+                                <div class="col-lg-2">
+                                    <span>Quality</span>
+                                </div>
+                                <div class="col-lg-2">
+                                    <span>Cost</span>
+                                </div>
+                                <div class="col-lg-2 amount_col">
+                                    <span>Amount</span>
+                                </div>
+                                <div class="col-lg-1 btn_can_col">
+
+                                </div>
+                            </div>
+                            <div class="invoice_row">
+                                <div class="row edit_inv_row">
+                                    <div class="col-lg-4">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-1 code_col">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-2 amount_col">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-1 btn_can_col">
+                                        <span class="remove_invoice_row"><i class="fa fa-close"></i></span>
+                                    </div>
+                                </div>
+                                <div class="row edit_inv_row">
+                                    <div class="col-lg-4">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-1 code_col">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-2 amount_col">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-1 btn_can_col">
+                                        <span class="remove_invoice_row"><i class="fa fa-close"></i></span>
+                                    </div>
+                                </div>
+                                <div class="row edit_inv_row">
+                                    <div class="col-lg-4">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-1 code_col">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-2 amount_col">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-1 btn_can_col">
+                                        <span class="remove_invoice_row"><i class="fa fa-close"></i></span>
+                                    </div>
+                                </div>
+                                <div class="row edit_inv_row">
+                                    <div class="col-lg-4">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-1 code_col">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-2 amount_col">
+                                        <input type="text" placeholder="" >
+                                    </div>
+                                    <div class="col-lg-1 btn_can_col">
+                                        <span class="remove_invoice_row"><i class="fa fa-close"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <button class="btn btn_add add_invoice_row"><i class="fa fa-plus"></i></button>
+                                </div>
+                            </div>
+
+                            <div class="row price_list">
+                                <div class="col-lg-9">
+                                    <span>Sub Total</span>
+                                </div>
+                                <div class="col-lg-3">
+                                    <span>00.00</span>
+                                </div>
+                                <div class="col-lg-9">
+                                    <span>Discount</span>
+                                </div>
+                                <div class="col-lg-3">
+                                    <span>00.00</span>
+                                </div>
+                                <div class="col-lg-9">
+                                    <span>Tax</span>
+                                </div>
+                                <div class="col-lg-3">
+                                    <span>00.00</span>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <div class="row grand_total">
+                                <div class="col-lg-9">
+                                    <span>Grand Total</span>
+                                </div>
+                                <div class="col-lg-1">
+                                    <span>00.00</span>
+                                </div>
+                                <div class="col-lg-2">
+                                    <span>June 15 2016 | Cash</span>
+                                </div>
+                            </div>
+                            <hr>
+
+                            <div class="row margin-top-30">
+
+                                <div class="col-lg-3">
+                                    <label>Notes</label>
+                                </div>
+                                <div class="col-lg-9">
+                                    <textarea rows="6"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row">
+
+                                <div class="col-lg-12">
+                                    <span class="pull-left term_cond">Terms & Condition</span>
+                                    <button type="button" class="btn button-style-1 button-style-1_a pull-right hide_edit_inovice">Cancel</button>
+                                    <button type="button" class="btn btn-default button-style-1 pull-right margin-right-10">Print</button>
+                                </div>
+
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+
+                <div class="print_invoice">
+                    <div class="row">
+                        <div class="col-lg-6 invoice_logo">
+                            <h2>Logo</h2>
+                            <span>Hospital Name</span>
+                        </div>
+                        <div class="col-lg-6 text-right invoice_address">
+                            <span>203-204 19B Lane, Sunset Bulevard, CA</span><br>
+                            <span>hospital-email@domainname.com</span><br>
+                            <span>+ 1 555 555 555</span>
+                        </div>
+                    </div>
+
+                    <div class="row patient_info">
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <label>Patient Name</label>
+                                </div>
+                                <div class="col-lg-3">
+                                    <span>{{selectedInvoice.first_name}}</span>
+                                </div>
+                                <div class="col-lg-3">
+                                    <label>Patient ID</label>
+                                </div>
+                                <div class="col-lg-3">
+                                    <span>{{selectedInvoice.patient_id}}</span>
+                                </div>
+
+                                <div class="col-lg-3 clear">
+                                    <label>Age</label>
+                                </div>
+                                <div class="col-lg-3">
+                                    <span>{{selectedInvoice.age}}</span>
+                                </div>
+                                <div class="col-lg-3">
+                                    <label>Sex</label>
+                                </div>
+                                <div class="col-lg-3">
+                                    <span>{{selectedInvoice.gender}}</span>
+                                </div>
+                                <div class="col-lg-3 clear">
+                                    <label>Address</label>
+                                </div>
+                                <div class="col-lg-9">
+                                    <span>{{selectedInvoice.street}}</span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-lg-3 text-center">
+                            <span class="patient_status">{{selectedInvoice.invoice_status| capitalize:true}}</span>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label>Invoice No</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <span>{{selectedInvoice.invoice_id}}</span>
+
+                                </div>
+                                <div class="col-lg-6 clear">
+                                    <label>Date</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <span>{{selectedInvoice.invoice_date}}</span>
+                                </div>
+                                <div class="col-lg-6 clear">
+                                    <label>Provider</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <span>{{selectedInvoice.provider}}</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--   <div class="table-header row background-none">
+                           <div class="pull-right">
+                               <button class="add button-custom pull-right" data-toggle="modal" data-target="#">Add Procedure from master list</button>
+                               <button class="add button-custom pull-right" data-toggle="modal" data-target="#">Add Product from master list</button>
+
+                           </div>
+
+                       </div>-->
+                    <form class="custom-form">
+                        <div class="row edit_inv_row_hdng">
+                            <div class="col-lg-4">
+                                <span>Description</span>
+                            </div>
+                            <div class="col-lg-1 code_col">
+                                <span>Code</span>
+                            </div>
+                            <div class="col-lg-2">
+                                <span>Quality</span>
+                            </div>
+                            <div class="col-lg-2">
+                                <span>Cost</span>
+                            </div>
+                            <div class="col-lg-2 amount_col">
+                                <span>Amount</span>
+                            </div>
+                            <div class="col-lg-1 btn_can_col">
+
+                            </div>
+                        </div>
+                        <div class="invoice_row">
+                            <div class="row edit_inv_row">
+                                <div class="col-lg-4">
+                                    <input type="text" placeholder="" value="{{selectedInvoice.purpose}}" >
+                                </div>
+                                <div class="col-lg-1 code_col">
+                                    <input type="text" placeholder="" value="{{selectedInvoice.invoice_id}}"  >
+                                </div>
+                                <div class="col-lg-2">
+                                    <input type="text" placeholder="" >
+                                </div>
+                                <div class="col-lg-2">
+                                    <input type="text" placeholder=""  value="{{selectedInvoice.amount}}">
+                                </div>
+                                <div class="col-lg-2 amount_col">
+                                    <input type="text" placeholder="" value="{{selectedInvoice.amount}}" >
+                                </div>
+                                <!--   <div class="col-lg-1 btn_can_col">
+                                       <span class="remove_invoice_row"><i class="fa fa-close"></i></span>
+                                   </div>-->
+                            </div>
+                            <!--              <div class="row edit_inv_row">
+                                              <div class="col-lg-4">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-1 code_col">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-2">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-2">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-2 amount_col">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-1 btn_can_col">
+                                                  <span class="remove_invoice_row"><i class="fa fa-close"></i></span>
+                                              </div>
+                                          </div>
+                                          <div class="row edit_inv_row">
+                                              <div class="col-lg-4">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-1 code_col">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-2">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-2">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-2 amount_col">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-1 btn_can_col">
+                                                  <span class="remove_invoice_row"><i class="fa fa-close"></i></span>
+                                              </div>
+                                          </div>
+                                          <div class="row edit_inv_row">
+                                              <div class="col-lg-4">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-1 code_col">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-2">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-2">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-2 amount_col">
+                                                  <input type="text" placeholder="" >
+                                              </div>
+                                              <div class="col-lg-1 btn_can_col">
+                                                  <span class="remove_invoice_row"><i class="fa fa-close"></i></span>
+                                              </div>
+                                          </div>-->
+                        </div>
+
+                        <!--  <div class="row">
+                              <div class="col-lg-12">
+                                  <button class="btn btn_add add_invoice_row"><i class="fa fa-plus"></i></button>
+                              </div>
+                          </div>-->
+
+                        <div class="row price_list">
+                            <div class="col-lg-9">
+                                <span>Sub Total</span>
+                            </div>
+                            <div class="col-lg-3">
+                                <span>{{selectedInvoice.amount}}</span>
+                            </div>
+                            <div class="col-lg-9">
+                                <span>Discount</span>
+                            </div>
+                            <div class="col-lg-3">
+                                <span>00.00</span>
+                            </div>
+                            <div class="col-lg-9">
+                                <span>Tax</span>
+                            </div>
+                            <div class="col-lg-3">
+                                <span>00.00</span>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row grand_total">
+                            <div class="col-lg-9">
+                                <span>Grand Total</span>
+                            </div>
+                            <div class="col-lg-1">
+                                <span>{{selectedInvoice.amount}}</span>
+                            </div>
+                            <div class="col-lg-2">
+                                <span>{{selectedInvoice.invoice_date}}</span>
+                            </div>
+                        </div>
+                        <hr>
+
+                        <div class="row margin-top-30">
+
+                            <div class="col-lg-3">
+                                <label>Notes</label>
+                            </div>
+                            <div class="col-lg-9">
+                                <textarea rows="6"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-lg-12 foot_invoice">
+                                <span class="pull-left term_cond">Terms & Condition</span>
+                                <button type="button" class="btn button-style-1 button-style-1_a pull-right hide_print_inovice">Cancel</button>
+                                <button type="button" class="btn btn-default button-style-1 pull-right margin-right-10 btn_print">Print</button>
+                            </div>
+
+                        </div>
+
+                    </form>
+                </div>
+
+
+
+
+
+
+
+                <div class="tab-pane" id="receipts">
+
+                    <div class="table-header row background-none">
+                        <div class="col-lg-7"></div>
+                        <div class="col-lg-3">
+                            <div class="col-lg-2">
+                                <span class="txt-style-3 pull-left text-uppercase billing_period">period</span>
+                            </div>
+                            <div class="col-lg-10">
+                                <select class="form-control">
+                                    <option>All</option>
+                                    <option>Cheque</option>
+                                    <option>type 3</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="header-search billing_search pull-left">
+                                <button type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                                <input class="search_field" type="text" placeholder="Patient Name or Id">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-header row background-none">
+                        <div class="pull-right">
+                            <button class="add button-custom pull-right" data-toggle="modal" data-target="#addtemplate">Send Receipt</button>
+                            <button class="add button-custom pull-right" data-toggle="modal" data-target="#addtemplate">Add Payment</button>
+
+
+                        </div>
+                        <span class="txt-style-3 pull-left text-uppercase">category</span>
+                        <div class="col-lg-2">
+                            <select class="form-control">
+                                <option>Encounter for billing</option>
+                                <option>Cheque</option>
+                                <option>type 3</option>
+                            </select>
+                        </div>
+                        <!--                        <div class="pull-right">
+                                                    <div class="header-search pull-left margin-top-10">
+                                                        <button type="submit">
+                                                            <i class="fa fa-search"></i>
+                                                        </button>
+                                                        <input class="search_field" type="text" placeholder="Search Template">
+                                                    </div>
+                                                </div> -->
+                    </div>
+
+
+                    <form class="custom-form">
+                        <table class="table table-striped no-margin table-custom table-custom_big receipt_table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Date</th>
+                                    <th>Invoice No</th>
+                                    <th>receipt no</th>
+                                    <th>patient name</th>
+                                    <th>payment method</th>
+                                    <th>purpose</th>
+                                    <th>amount</th>
+                                    <th>refund amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td align="center">
+                                        <div class="radio radio-styled">
+                                            <label>
+                                                <input type="radio" name="optionsRadios" value="option1"><span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>14/04/2016  12:00:32</td>
+                                    <td>21245421</td>
+                                    <td>90189191</td>
+                                    <td>Joe Bloggs</td>
+                                    <td>Cash</td>
+                                    <td>GOPD Consultation</td>
+                                    <td>N500</td>
+                                    <td>
+                                        <span>N2000</span>
+                                        <div class="receipt_actions"><a href="javascript:;" class="setting-button"></a>
+                                            <div class="tool-tip_popup">
+                                                <a href="javascript:;">View Details</a>
+                                                <a href="javascript:;">Edit</a>
+                                                <a href="javascript:;">Print</a>
+                                                <a href="javascript:;">Void</a>
+                                                <a href="javascript:;">Refund</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <div class="radio radio-styled">
+                                            <label>
+                                                <input type="radio" name="optionsRadios" value="option1"><span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>14/04/2016    12:00:32</td>
+                                    <td>875415745</td>
+                                    <td>90189191</td>
+                                    <td>Joe Bloggs</td>
+                                    <td>Cash</td>
+                                    <td>GOPD Consultation</td>
+                                    <td>N3500</td>
+                                    <td>
+                                        <span>N2000</span>
+                                        <div class="receipt_actions"><a href="javascript:;" class="setting-button"></a>
+                                            <div class="tool-tip_popup">
+                                                <a href="javascript:;">View Details</a>
+                                                <a href="javascript:;">Edit</a>
+                                                <a href="javascript:;">Print</a>
+                                                <a href="javascript:;">Void</a>
+                                                <a href="javascript:;">Refund</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <div class="radio radio-styled">
+                                            <label>
+                                                <input type="radio" name="optionsRadios" value="option1"><span></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td>14/04/2016    12:00:32</td>
+                                    <td>2454521</td>
+                                    <td>90189191</td>
+                                    <td>Joe Bloggs</td>
+                                    <td>Cash</td>
+                                    <td>Lab Test</td>
+                                    <td>N2500</td>
+                                    <td>
+                                        <span>N2000</span>
+                                        <div class="receipt_actions"><a href="javascript:;" class="setting-button"></a>
+                                            <div class="tool-tip_popup">
+                                                <a href="javascript:;">View Details</a>
+                                                <a href="javascript:;">Edit</a>
+                                                <a href="javascript:;">Print</a>
+                                                <a href="javascript:;">Void</a>
+                                                <a href="javascript:;">Refund</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+
+                <div class="tab-pane" id="reports">
+
+
+                    <div class="table-header row background-none reports_tab">
+                        <div class="pull-right">
+                            <button class="add button-custom pull-right">Print Receipt</button>
+
+                        </div>
+                        <h2 class="reports_hdng">Receipts</h2>
+
+                    </div>
+
+
+                    <form class="custom-form">
+
+                        <div class="row patient_info_reports">
+                            <div class="col-lg-2">
+                                <label>Patient Name</label>
+                            </div>
+                            <div class="col-lg-2">
+                                <span>Joe Bloggs</span>
+                            </div>
+                            <div class="col-lg-2">
+                                <label>Patient ID</label>
+                            </div>
+                            <div class="col-lg-2">
+                                <span>ID2012115</span>
+                            </div>
+                            <div class="col-lg-2">
+                                <label>Receipts No</label>
+                            </div>
+                            <div class="col-lg-2">
+                                <span>21241245</span>
+                            </div>
+                            <div class="col-lg-2 clear">
+                                <label>Payment Method</label>
+                            </div>
+                            <div class="col-lg-2">
+                                <span>Cash</span>
+                            </div>
+                            <div class="col-lg-2">
+                                <label>Date</label>
+                            </div>
+                            <div class="col-lg-2">
+                                <span>June 15 2016</span>
+                            </div>
+
+                        </div>
+
+
+
+                        <table class="table no-margin table-custom_big reports_table">
+                            <thead>
+                                <tr>
+                                    <th>Item No</th>
+                                    <th>Description</th>
+                                    <th>Date</th>
+                                    <th>amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>21245421</td>
+                                    <td>Lorem ipsum Lorem</td>
+                                    <td>June 15 2016</td>
+                                    <td>N500</td>
+                                </tr>
+                                <tr>
+                                    <td>21245421</td>
+                                    <td>Lorem ipsum Lorem</td>
+                                    <td>June 15 2016</td>
+                                    <td>N500</td>
+                                </tr>
+                                <tr>
+                                    <td>21245421</td>
+                                    <td>Lorem ipsum Lorem</td>
+                                    <td>June 15 2016</td>
+                                    <td>N500</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="row total_payment">
+                            <div class="col-lg-9">
+                                <span>Total Payment</span>
+                            </div>
+                            <div class="col-lg-3">
+                                <span>00.00</span>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+            <!--end .card-body -->
+        </div>
+        <!--        end .card -->
+    </section>
+</div>
+
+
+
+<div class="modal fade modal-size_1" id="process_payment" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Process Payment</h2>
+            </div>
+            <div class="modal-body">
+                <form class="custom-form" ng-submit="ProcessingPayment(AmountPaid, invoice_id);">
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-3">
+                            <label>Invoice ID</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" placeholder="" ng-model="AmountPaid.inv_id"  value="{{invoice_id}}"  readonly/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label>Amount Paid</label>
+                        </div>
+                        <div class="col-lg-9"><!-- ng-keyup="calculateAmount(tAmount, AmountPaid.amount_paid);" -->
+                            <input type="text" placeholder="" numbers-only ng-model="AmountPaid.amount_paid"  required/>
+                        </div>
+                    </div><br/>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label>Amount Due</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" placeholder="" disabled ng-model="tAmount"/>
+                        </div>
+                    </div>
+
+
+                    <div class="modal-footer row">
+                        <div class="row">
+                            <button type="submit" class="btn btn-default button-style-1">Process</button>
+                            <button type="button" class="btn button-style-1 button-style-1_a hide_print_inovice" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+
+        </div><!-- /.modal-content -->
+
+
+    </div><!-- /.modal-dialog -->
+
+</div><!-- /.modal -->
+
+
+<div class="modal fade modal-size_1" id="paid_modal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Process Payment </h2>
+            </div>
+            <div class="modal-body">
+                <form class="custom-form" ng-submit="ProcessingPayment(AmountPaid, invoice_id);">
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label>Invoice ID</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" placeholder="" ng-model="AmountPaid.inv_id"  value="{{invoice_id}}"  readonly/>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 margin-top-30">
+                            <p class="modal-subtext text-center">Your Invoice Has Been Paid </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn button-style-1" data-dismiss="modal">OK</button>
+
+                    </div>
+                </form>
+
+
+            </div>
+
+        </div><!-- /.modal-content -->
+
+
+    </div><!-- /.modal-dialog -->
+
+</div><!-- /.modal -->
+
+
+<div class="modal fade modal-size_2" id="send_invoice" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Send Invoice</h2>
+            </div>
+            <div class="modal-body">
+                <form class="custom-form" ng-submit="SendInvoice(sendData, invoice_id);">
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-3">
+                            <label>Patient ID</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" placeholder="" ng-model="sendData.inv_id"  value="{{selectedPatient.id}}"  readonly/>
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-3">
+                            <label>Patient Name</label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" placeholder="" ng-model="sendData.amount_paid" value="{{selectedPatient.first_name}}"  readonly/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3">
+                            <label>Email </label>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="email" placeholder="" ng-model="sendData.email"   />
+                        </div>
+                    </div>
+                    <div class="modal-footer row">
+                        <button type="submit" class="btn btn-default button-style-1">Send Email</button>
+                        <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div><!-- /.modal-content -->
+
+
+    </div><!-- /.modal-dialog -->
+
+</div><!-- /.modal -->
+
+<div class="modal fade modal-size_1" id="addpatient" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Add Vitals</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Continue to Add Patient Vitals</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-toggle="modal" data-target="#vital-signs" data-dismiss="modal">Ok</button>
+                <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="addToBill" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Add to Bill</h2>
+            </div>
+            <form class="custom-form" ng-submit="addToBill(addToBillData)">
+            <div class="modal-body">
+                
+                    <div class="row margin-bottom-xxl">
+                        <div class="radio radio-styled col-lg-6 margin-0">
+                            <label>
+                                <input type="radio" ng-model="product_show" name="selectaddtobill" value="product">
+                                <span>Product</span>
+                            </label>
+                        </div>
+                        <div class="radio radio-styled col-lg-6 margin-0">
+                            <label>
+                                <input type="radio" ng-model="product_show" name="selectaddtobill" value="service">
+                                <span>Service</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row" ng-show="product_show == 'product'">
+                        <div class="col-lg-3">
+                            <label>Select Product</label>
+                        </div>
+                        <div class="col-lg-9 select-con">
+                            <select class="select_searchFields form-control" placeholder="Select Product" ng-model="addToBillData.product">
+                                <option value=""></option>
+                                <option value="{{p.id}}" ng-repeat="p in productsDropdown">{{p.name}}</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 margin-top-10">
+                            <label>Quantity</label>
+                        </div>
+                        <div class="col-lg-9 margin-top-10">
+                            <input class="form-control" type="number" ng-model="addToBillData.quantity" placeholder="0" />
+                        </div>
+                    </div>
+                    <div class="row" ng-show="product_show == 'service'">
+                        <div class="col-lg-3">
+                            <label>Select Service</label>
+                        </div>
+                        <div class="col-lg-9 select-con">
+                            <select class="select_searchFields form-control" placeholder="Select Service" ng-model="addToBillData.service">
+                                <option value=""></option>
+                                <option value="{{s.id}}" ng-repeat="s in serviceBill">{{s.code}}</option>
+                            </select>
+                        </div>
+                    </div>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-default button-style-1">Ok</button>
+                <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+            </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="vital-signs" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Vitals Signs</h2>
+            </div>
+            <div class="modal-body">
+                <form class="custom-form" name="vitalForm" novalidate ng-submit="validateVitals(vital);">
+                    <!--<div class="row">-->
+                    <div class="row">
+                        <div class="col-lg-4" >
+                            <div class="col-lg-12 margin-bottom-xxl">
+                                <label class="label-style">Blood Pressure (mm Hg)</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>systolic (mm hg)</label>
+                            </div>
+                            <div class="col-lg-6 margin-bottom-xxl">
+                                <input type="text" placeholder="systolic (mm hg)"  ng-class="{
+                                            true
+                                            : 'error'}[vital.diastolic != undefined && vital.systolic == undefined]" ng-model="vital.systolic" numbers-only required/>
+                                <p ng-show="vital.diastolic != undefined && vital.systolic == undefined" class="help-block PIValid">Required</p>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>diastolic (mm hg)</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="text" placeholder="diastolic (mm hg)" ng-class="{
+                                            true
+                                            : 'error'}[vital.diastolic == undefined && vital.systolic != undefined]" ng-model="vital.diastolic" numbers-only required/>
+                                <p ng-show="vital.systolic != undefined && vital.diastolic == undefined" class="help-block PIValid">Required</p>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="col-lg-12 margin-bottom-xxl">
+                                <label class="label-style">Pulse Rate (min/bpm)</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>pulse</label>
+                            </div>
+                            <div class="col-lg-6 margin-bottom-xxl">
+                                <input type="text" placeholder="pulse" ng-model="vital.pulse" numbers-only/>
+                            </div>
+                            <!-- <div class="col-lg-12">
+                                <label class="label-style">Pulse Rate (min/bpm)</label>
+                            </div> -->
+                            <div class="col-lg-6">
+                                <label>respiratory rate</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="text" placeholder="respiratory rate" ng-model="vital.respiratoryRate" numbers-only/>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="col-lg-12 margin-bottom-xxl">
+                                <label class="label-style">Respiratory Rate (br/min)</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>temperature (c)</label>
+                            </div>
+                            <div class="col-lg-6 margin-bottom-xxl">
+                                <input type="text" placeholder="temperature (c)" ng-model="vital.temperaturec" numbers-only ng-keyup="GetTempcVal()"/>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>temperature (f)</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="text" placeholder="temperature (f)" ng-model="vital.temperaturef" ng-keyup="GetTempfVal()" numbers-only/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!--<div class="col-lg-12 margin-bottom-xxl">-->
+
+                        <!-- <div class="col-lg-5 pull-right">
+                            <div class="pull-right">
+                                <a class="txt-style-4" href="javascript:;">Attach</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                                <a class="txt-style-4" href="javascript:;">Past Notes</a>
+                            </div>
+                        </div> -->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <div class="col-lg-4">
+                            <div class="col-lg-12 margin-bottom-xxl margin-top-10">
+                                <label class="label-style">BMI (kg / m^2)</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>result</label>
+                            </div>
+                            <div class="col-lg-6 margin-bottom-xxl">
+                                <input type="text" placeholder="0" ng-model="vital.result" readonly/>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>weight (kg)</label>
+                            </div>
+                            <div class="col-lg-6 margin-bottom-xxl">
+                                <input type="text" ng-class="{true: 'error'}[vital.weight == undefined && vital.height != undefined]" placeholder="weight (kg)" ng-model="vital.weight" numbers-only ng-keyup="Calculatebmi()" required/>
+                                <p ng-show="vital.weight == undefined && vital.height != undefined" class="help-block PIValid">Required</p>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <label>height (cm)</label>
+                            </div>
+                            <div class="col-lg-6 margin-bottom-xxl">
+                                <input type="text" ng-class="{true: 'error'}[vital.height == undefined && vital.weight != undefined]" placeholder="height (cm)" ng-model="vital.height" ng-keyup="Calculatebmi()" numbers-only required />
+                                <p ng-show="vital.height == undefined && vital.weight != undefined" class="help-block PIValid">Required</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-8 margin-bottom-xxl margin-top-50">
+                            <div class="col-lg-3">
+                                <label>Notes</label>
+                            </div>
+                            <div class="col-lg-9">
+                                <textarea placeholder="Write Your Text Here" ng-model="vital.notes"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-default button-style-1" ng-click="submitted = true;">Save</button>
+                        <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+                    </div>
+
+                    <!--</div>-->
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+<div class="modal fade modal-size_1" id="noResultFound" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Result</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">No Result Found</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">Ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" id="checkout" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-mid">
+        <form class="custom-form" ng-submit="checkout(CO)">
+            <div class="modal-content">
+                <div class="modal-header pop_head">
+                    <h2>Check Out Patient</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="col-lg-12 no-padding margin-bottom-xxl">
+                        <div class="alert {{messageType}}" role="alert" ng-show="message">
+                            <i class="{{errorSymbol}}"></i> {{errorMessage}}
+                        </div>
+                        <div class="radio radio-styled">
+                            <label>
+                                <input type="radio" name="checkoutpatient" value="Noappointment" checked>
+                                <span>No Appointment</span>
+                            </label>
+                        </div>
+                        <div class="radio radio-styled">
+                            <label>
+                                <input type="radio" name="checkoutpatient" value="followUp" ng-model="CO.reason">
+                                <span>Follow up</span>
+                            </label>
+                        </div>
+                        <div class="radio radio-styled">
+                            <label>
+                                <input type="radio" name="checkoutpatient" value="admitPatient" ng-model="CO.reason">
+                                <span>Admit Patient</span>
+                            </label>
+                        </div>
+                        <div class="radio radio-styled">
+                            <label>
+                                <input type="radio" name="checkoutpatient" value="dead" ng-model="CO.reason">
+                                <span>Dead</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="checkout_patient_tab_con">
+                        <div id="Noappointment" class="active">
+                            <label class="margin-bottom-xl">Note</label>
+                            <textarea placeholder="Write Here..." ng-model="CO.note"></textarea>
+                        </div>
+                        <div id="followUp" class="row">
+                            <div class="col-lg-2">
+                                <label>DATE</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="input-group date select-date col-lg-12">
+                                    <div class="input-group-content">
+                                        <input type="text" class="form-control" placeholder="Select Date" ng-model="CO.date">
+                                    </div>
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <label>Time</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="input-group bootstrap-timepicker timepicker col-lg-12">
+                                    <input type="text" class="form-control input-small timepicker" ng-model="CO.time">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <label class="margin-bottom-xl">Note</label>
+                                <textarea class="margin-bottom-lg" placeholder="Write Here..." ng-model="CO.note"></textarea>
+                            </div>
+                        </div>
+                        <div id="admitPatient" class="row">
+                            <div class="margin-bottom-xxl row">
+                            <div class="col-lg-12">
+                                <span class="txt-style-4">Presenting Complaint: Captured from Clinical Note</span>
+                            </div>
+                                </div>
+                            <div class="margin-bottom-xxl row">
+                            <!-- <div class="col-lg-3">
+                                <label>to specialty</label>
+                            </div>
+                            <div class="col-lg-3 select-con">
+                                <select class="form-control" ng-model="CO.CPN" placeholder="Clinic Progress Notes">
+                                    <option value=""></option>
+                                <option value="{{w.id}}" ng-repeat="w in encountersDropdownData.departments">{{w.name}}</option>
+                                </select>
+                            </div> -->
+                            <div class="col-lg-3">
+                                <label>admit to ward</label>
+                            </div><!-- ng-class="{true: 'error'}[submitted && moveForm.ward.$invalid]"  -->
+                            <div class="col-lg-3 select-con select-con_small">
+                                <select class="form-control" name="ward" ng-change="wardSelected(CO.ward);" ng-model="CO.ward" placeholder="Select Ward">
+                                    <option value=""></option>
+                                    <option value="{{w.id}}" ng-repeat="w in wardDropdown">{{w.name}}</option>
+                                </select>
+                                <div class="ward-button-con" ng-hide="wardselect">
+                                    <button class="ward-button" ng-click="showbeds();" type="button"></button>
+                                    <div class="select-bed-dropdown" ng-hide="showBed">
+                                        <div class="radio radio-styled" ng-repeat="beds in noOFBeds">
+                                            <div class="radio radio-styled">
+                                                <label>
+                                                    <input type="radio" name="checked" ng-model="action" ng-click="bedSelected(beds.id);">
+                                                    <span>{{beds.id}}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="margin-bottom-xxl row">
+                            <div class="col-lg-3">
+                                <label>Admitted DATE</label>
+                            </div>
+                            <div class="col-lg-3">
+                                <label class="txt-style-4">{{admittedDate}}</label>
+                            </div>
+                            <div class="col-lg-3">
+                                <label>Estimated Discharge</label>
+                            </div>
+                            <div class="col-lg-3">
+                                <!-- <div class="input-group bootstrap-timepicker timepicker col-lg-12">
+                                    <input type="text" class="form-control input-small timepicker" ng-model="CO.discharge">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                </div> -->
+                                <div class="input-group date select-date col-lg-12">
+                                    <div class="input-group-content">
+                                        <input type="text" class="form-control" placeholder="Select Date" ng-model="CO.discharge">
+                                    </div>
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                                </div>
+                            <div class="margin-bottom-xxl row">
+                            <div class="col-lg-12">
+                                <label class="margin-bottom-xl">Note</label>
+                                <textarea class="margin-bottom-lg" placeholder="Write Here..." ng-model="CO.note"></textarea>
+                            </div>
+                                </div>
+                        </div>
+                        <div id="dead" class="row">
+                            <div class="col-lg-12">
+                                <label class="margin-bottom-xl">Note</label>
+                                <textarea class="margin-bottom-lg" placeholder="Write Here..." ng-model="CO.note"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer padding-right-0">
+                        <button type="submit" class="btn btn-default button-style-1 padding11">Save & Close</button>
+                        <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </form>
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="deleteConfirm" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Confirmation</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Do you want to delete?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" ng-click="deletingInvoice(invoice_id)">Yes</button>
+                <button type="button" class="btn btn-default button-style-1 button-style-1_a" data-dismiss="modal">No</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="successModal" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Status</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Invoice Deleted Successfully</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="freeze" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Status</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Invoice Can't be Deleted</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="patientRegBill" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Patient Registration Bill</h2>
+            </div>
+            <form class="custom-form" novalidate name="Preg" ng-submit="patientRegBill(patientName, patientAmount)">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-3 margin-top-10">
+                        <label>Bill ID</label>
+                    </div>
+                    <div class="col-lg-9 margin-top-10">
+                        <input type="text" ng-model="patientBillID" ng-disabled="true"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3 margin-top-10">
+                        <label>Patient Name</label>
+                    </div>
+                    <div class="col-lg-9 margin-top-10">
+                        <input type="text" class="form-control" name="patientname" ng-class="{true: 'error'}[Preg.patientname.$invalid && submitted]" placeholder="" ng-model="patientName" required/>
+                    <p ng-show="Preg.patientname.$error.required && submitted" class="help-block PIValid">Required</p>
+                    </div>
+                </div>
+                <!-- <div class="row">
+                    <div class="col-lg-3 margin-top-10">
+                        <label>Amount Paid</label>
+                    </div>
+                    <div class="col-lg-9 margin-top-10">
+                        <input type="text" class="form-control" name="patientname" ng-class="{true: 'error'}[Preg.patientname.$invalid && submitted]" placeholder="" ng-model="patientAmount" required/>
+                    <p ng-show="Preg.patientname.$error.required && submitted" class="help-block PIValid">Required</p>
+                    </div>
+                </div> -->
+            </div>
+            <div class="modal-footer">
+                <button type="submit" ng-click="submitted=true" class="btn btn-default button-style-1" ng-disabled="disabledPatientRegButton || {true: true}[Preg.patientname.$invalid]">Add</button>
+                <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal" ng-click="disabledPatientRegButton = false; patientBillID = ''">Cancel</button>
+            </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="pregbillSuccess" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Status</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">{{dynamicMsg}}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="WaiveBill" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Status</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Do you want to Waived Bill?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" ng-click="waiveBill();">Yes</button>
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">No</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="WaiveBillInvoice" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Status</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Do you want to Waived Invoice?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" ng-click="waiveBillInvoice();">Yes</button>
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">No</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

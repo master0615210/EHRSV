@@ -1,0 +1,893 @@
+<div id="content">
+    <section>
+        <div class="card {{dataStrip}}" ng-class="{true: 'custom-card'}[patientInfo]">
+            <div class="card-head card-head-custom adjust-width {{hospital_plan}}" ng-show="patientInfo">
+                <div class="col-lg-2 adjust-1" ng-show="visitStatus == 0">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Visit ID</label>
+                    <span class="txt-style-2 col-lg-12 capitalize">--</span>
+                </div>
+                <div class="col-lg-2" ng-show="visitStatus == 1">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Visit ID</label>
+                    <span class="txt-style-2 col-lg-12 capitalize">E{{EID || encounterID}}</span>
+                </div>
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Patient Name</label>
+                    <span class="txt-style-2 col-lg-12 capitalize">{{displayInfo.first_name}} {{displayInfo.last_name}}</span>
+                </div>
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Patient Number</label>
+                    <span class="txt-style-2 col-lg-12">P{{displayInfo.patient_id}}</span>
+                </div>
+                <div class="col-lg-1">
+                    <label class="txt-style-1 text-uppercase col-lg-12 adjust-2">Age</label>
+                    <span class="txt-style-2 col-lg-12 capitalize">{{displayInfo.age}}</span>
+                </div>
+                <div class="col-lg-1">
+                    <label class="txt-style-1 text-uppercase col-lg-12">Sex</label>
+                    <span class="txt-style-2 col-lg-12 capitalize">{{displayInfo.sex}}</span>
+                </div>
+                <div class="col-lg-2">
+                    <label class="txt-style-1 text-uppercase col-lg-12">marital status</label>
+                    <span class="txt-style-2 col-lg-12 capitalize">{{displayInfo.marital_status}}</span>
+                </div>
+                <div class="col-lg-2">
+                    <a href="#/billing/{{PID}}" class="button-style-2">
+                        <img src="assets/img/content_icn_blue.png" />
+                    </a>
+                   <!--  <a href="javascript:;" class="button-style-2">
+                        <img src="assets/img/assign_blue.png" />
+                    </a> -->  <!-- ng-if="visitStatus == 0"  -->
+                    <a href="javascript:void(0);" data-toggle="modal" data-target="#checkout" class="button-style-2">
+                        <img src="assets/img/discharge_icn_blue.png" />
+                    </a>
+                </div>
+            </div>
+            <div class="table-header col-lg-12">
+                <div class="pull-left">
+                    <span class="txt-style-3 pull-left text-uppercase">Encounter List</span>
+                     <!--<div class="header-search margin-right-0 pull-right">-->
+
+                        <!--                        <button type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <input class="search_field" type="text" ng-model="search" placeholder="Search for a patient">-->
+                    <!--</div>-->
+                </div>
+                <div class="create_counter">
+                    <!-- <button type="button" ng-click="goToEncounter();" class="add button-custom pull-right open-custom_pop" ng-if="visitStatus == 1" ng-hide="gotoencounter">Go To Encouter</button> -->
+                    <button type="button" ng-click="openCreateEncounter();" class="add button-custom pull-right open-custom_pop" >create encounter</button> <!-- ng-hide="disabledEncounterButton" ng-if="visitStatus == 0" -->
+                    <button type="button" class="calendar button-custom pull-right" data-toggle="modal" data-target="#createAppointment">Create Appointment</button> <!--  ng-hide="disabledEncounterButton" -->
+                    <button type="button" data-toggle="modal" data-target="#neworder" class="microscope button-custom pull-right">Order Labs</button><!-- ng-hide="disabledEncounterButton" -->
+                    <!-- <button type="button" data-toggle="modal" data-target="#scanbarcode" class="scan-icon button-custom pull-right">scan barcode</button> -->
+                    <div class="counter_pop custom_popup" ng-hide="closePopUp">
+                        <div class="pop_head col-lg-12">
+                            <h2 class="">Create New Encounter</h2> 
+                        </div>
+                        <div class="pop_body">
+                            <div class="alert {{messageType}}" role="alert" ng-show="message">
+                                <i class="{{errorSymbol}}"></i> {{errorMessage}}
+                            </div>
+                            <form class="custom-form" name="encounterFormAdd" ng-model="myForm" novalidate ng-submit="validateEncounterForm(addEncounter);" >
+                                <div class="col-lg-11">
+                                    <input class="search_field" type="text" ng-model="addEncounter.selectedPatientID" placeholder="Search by Name or Patient Id" id="findPatientEncounter" data-source="{{PatientSearch}}search_patient_without_encounters" name="patientID" ng-class="{true: 'error'}[submitted && myFormAdd.patientID.$invalid]" required>
+                                    <p class="help-block PIValid" ng-show="submitted && encounterFormAdd.patientID.$error.required">Required</p>
+                                </div>
+                                <div class="col-lg-1">
+                                    <button type="button" class="scan-icon button-custom" ng-click="autoFocused();" style="width: 25px;"></button>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>clinic facility / Dept</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <select class="form-control" ng-class="{true: 'error'}[submitted && encounterFormAdd.department.$invalid]" name="department" ng-model="addEncounter.department" placeholder="Select Facility/Dept" required>
+                                        <option value=""></option>
+                                        <!-- <option value="1">1</option>
+                                        <option value="2">2</option> -->
+                                        <option ng-repeat="department in encountersDropdownData.departments" value="{{department.id}}">{{department.name}}</option>
+                                    </select>
+                                    <p class="help-block PIValid" ng-show="submitted && encounterFormAdd.department.$error.required">Required</p>
+                                </div>
+
+                                <!--<div class="col-lg-6">
+                                    <label>encounter class</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <select class="form-control" ng-class="{true: 'error'}[submitted && encounterFormAdd.class.$invalid]" name="class" ng-model="addEncounter.class" placeholder="Select Class" required>
+                                        <option value=""></option>
+                                        <option value="Emergency">Emergency</option>
+                                        <option value="Inpatient">Inpatient</option>
+                                        <option value="Outpatient">Outpatient</option>
+                                        <option value="Preadmit">Preadmit</option>
+                                        <option value="Recurring patient">Recurring patient</option>
+                                        <option value="Obstetrics">Obstetrics</option>
+                                    </select>
+                                    <p class="help-block PIValid" ng-show="submitted && encounterFormAdd.class.$error.required">Required</p>
+                                </div> -->
+
+                                <div class="col-lg-6">
+                                    <label>encounter type</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <select class="form-control" ng-class="{true: 'error'}[submitted && encounterFormAdd.type.$invalid]" name="type" ng-model="addEncounter.type" placeholder="Select Type" required>
+                                        <option value=""></option>
+                                        <!-- <option ng-repeat="type in types" value="{{type.id}}">{{type.name}}</option> -->
+                                        <option value="Consultation">Consultation</option>
+                                        <option value="Surgical procedure">Surgical procedure</option>
+                                        <option value="Followup visit">Followup visit</option>
+                                        <option value="Rehabilitation">Rehabilitation</option>
+                                    </select>
+                                    <p class="help-block PIValid" ng-show="submitted && encounterFormAdd.type.$error.required">Required</p>
+                                </div>
+
+                                <div class="col-lg-12">
+                                <img src="assets/img/loader.gif" class="pull-right encounter-loader {{hideLoader}}"/>
+                                    <div class="pull-right">
+                                        <button type="submit" class="btn ink-reaction button-style-1" ng-click="submitted = true;" ng-disabled="submitted && encounterFormAdd.$invalid">create encounter</button>
+                                        <button type="button" class="btn ink-reaction button-style-1 button-style-1_a close_custom_pop" ng-click="closeAddEncounter();" ng-disabled="addEncounterBtn">Cancel</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body col-lg-12">
+               <!--  <div>
+                    <input class="encounter-search-bar" ng-change="getSearchPatient(search1);" type="text" ng-model="search1" placeholder="Search for a patient">
+                </div> -->
+            </div>
+            <div class="col-lg-12 padding-30">
+                <div class="pull-left">
+                    <!-- <span class="txt-style-3 pull-left text-uppercase">Encounter List</span> -->
+                    <div class="header-search margin-right-0 pull-left">
+                        <button type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <input class="search_field" type="text" ng-model="listsearch" placeholder="Search Patient By Name">
+                    </div>
+                </div>
+                <!--ng-click="checkout(action);"-->
+                <button type="button"  class="checkout button-custom pull-right" data-toggle="modal" data-target="#assignRoom" ng-hide="buttonDisabled">Assign Room</button>
+
+                <button type="button"  class="checkout button-custom pull-right" data-toggle="modal" data-target="#checkout" ng-click="CO = {};" ng-hide="buttonDisabled">Checkout</button>
+
+                <button type="button" class="delete button-custom pull-right" ng-hide="buttonDisabled" data-target="#removeEncounter" data-toggle="modal">remove</button>
+
+                <button type="button" data-toggle="modal" class="edit button-custom pull-right" ng-hide="buttonDisabled" ng-click="updateEncounters();">UPDATE</button>
+
+                <button type="button" data-toggle="modal" class="notes button-custom pull-right" ng-hide="buttonDisabled" data-target="#addclinical" ng-click="goToClinicalNotes();">Clinical Notes</button>
+
+                <button type="button" data-toggle="modal" class="add button-custom pull-right" data-target="#addpatient" ng-hide="buttonDisabled">Add Vitals</button>
+            </div>
+            <div class="card-body col-lg-12">
+                <div>
+                    <table class="table table-striped no-margin table-custom table-custom_big">
+                        <thead>
+                            <tr>
+                                <th>SN</th>
+                                <th>Visit ID</th>
+                                <th>date & time</th>
+                                <th>patient ID</th>
+                                <th>full name</th>
+                                <th>Speciality</th>
+                                <th>visit type</th>
+                                <!-- <th>visit class</th> -->
+                                <th>Room</th>
+                                <!-- <th>Exam Room</th> -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="encounter in allEncounter | filter:{ first_name: listsearch}">
+                                <td align="center">
+                                    <!-- <div class="radio radio-styled">
+                                        <label>
+                                            <input type="radio" name="optionsRadios" value="option1">
+                                        </label>
+                                    </div> -->
+                                    <div class="radio radio-styled">
+                                        <label>
+                                            <input type="radio" name="optionsRadios" ng-model="action" ng-click="encounterSelectedByRadio(encounter.patient_id, encounter.id);" ng-value="{{encounter.id}}" ng-checked="action == encounter.patient_id" ng-init="EID=EID==encounter.id ? EID : '';">
+                                            <span class="hide" ng-init="EID==encounter.id ? buttonDisabled = false : '';"></span>
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>E{{encounter.id}}</td>
+                                <td>{{encounter.created_at}}</td>
+                                <td><a class="blue" href="#/patient-summary-demographics/{{encounter.patient_id}}">P{{encounter.patient_id}}</a></td>
+                                <td class="capitalize">{{encounter.first_name}} {{encounter.middle_name}} {{encounter.last_name}}</td>
+                                <td>{{encounter.faculty}}</td>
+                                <td>{{encounter.encounter_type}}</td>
+                                <!-- <td>{{encounter.encounter_class}}</td> -->
+                                <td>{{encounter.room}}</td>
+                                <!-- <td>{{encounter.name}}</td> -->
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- <pagination data-ng-model="currentPage" total-items="numOfData.length"
+                            items-per-page="numPerPage" data-max-size="maxSize" data-boundary-links="true"
+                            ng-init="begin = (currentPage-1)*numPerPage; end = begin + numPerPage"
+                            data-ng-change="begin = (currentPage-1)*numPerPage; end = begin + numPerPage">
+                        </pagination> -->
+                    <!--                    <div class="pagination pagination-centered" ng-show="allEncounterCount">
+                        <ul class="pagination-controle pagination">
+                            <li>
+                              <button type="button" class="btn btn-primary" ng-disabled="curPage == 0" ng-click="curPage=curPage-1; paginationPrev(pageSize, curPage);"> &lt; PREV</button>
+                            </li>
+                            <li>
+                              <span>Page {{curPage + 1}} of {{ numberOfPages() }}</span>
+                            </li>
+                            <li>
+                              <button type="button" class="btn btn-primary" ng-disabled="curPage >= allEncounterCount/pageSize - 1" ng-click="curPage = curPage+1; paginationNext(pageSize, curPage);">NEXT &gt;</button>
+                            </li>
+                        </ul>
+                    </div>-->
+                    <div class="pagination pagination-centered pull-right" ng-show="allEncounterCount">
+                        <ul class="pagination-controle pagination">
+                            <li class="prev-page">
+                                <button type="button" class="btn btn-primary" ng-disabled="curPage == 0" ng-click="curPage=curPage-1; paginationPrev(pageSize, curPage);"><i class="fa fa-caret-left"></i></button>
+                            </li>
+                            <li>
+                                <span class="pagination-detail">Page <input type="text" width="5px" ng-model="pageNumber" numbers-only value="{{curPage + 1}}" placeholder="Page Number"/><span class="space-both-side">of</span>{{ numberOfPages() }}</span>
+                            </li>
+                             <li class="next-page">
+                              <button type="button" class="btn btn-primary" ng-disabled="curPage >= allEncounterCount/pageSize - 1" ng-click="curPage = curPage+1; paginationNext(pageSize, curPage);"><i class="fa fa-caret-right"></i></button>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div><!--end .card -->
+    </section>
+</div>
+<div class="modal fade modal-size_3" id="neworder" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header pop_head">
+            <h2>New Order</h2>
+        </div>
+        <form class="custom-form" name="addForm" ng-model="myForm" novalidate ng-submit="testAdded && createOrder(Order);">
+            <div class="modal-body">
+                <div class="row margin-bottom-xxl">
+                    <div class="col-lg-11">
+                        <!-- <select class="form-control select_searchFields" ng-model="Order.patient_id" placeholder="Select Patient" name="patient_id" ng-class="{true: 'error'}[submitted && addForm.patient_id.$invalid]" required>
+                            <option value=""></option>
+                            <option ng-repeat="patient in patients" value="{{ patient.id }}" ng-selected="Order.patient_id == patient.id">{{ patient.id + ' ' + patient.first_name + ' ' + patient.last_name }}</option>
+                        </select> -->
+                        <input class="select_searchFields" type="text" ng-model="appointment.appointmentSearch" placeholder="Search by Name or Patient Id" id="findPatient" data-source="{{PatientSearch}}search_patient" name="patient_id" ng-class="{true: 'error'}[submitted && addForm.patient_id.$invalid]" required>
+                        <p class="help-block PIValid" ng-show="submitted && addForm.patient_id.$error.required">Required</p>
+                        <!-- <input type="text" disabled="true" ng-value="PIDwithName" ng-model="Order.patient_id"> -->
+                    </div>
+                    <div class="col-lg-1">
+                        <button type="button" ng-click="autoFocused();" class="scan-icon button-custom" style="width: 25px;"></button>
+                    </div>
+                </div>
+                <div class="row margin-bottom-xxl">
+                <div class="col-lg-2">
+                    <label>time order created</label>
+                </div>
+                <div class="col-lg-4 margin-bottom-xxl">
+                    <input type="text" placeholder="{{date | date:'MMM dd, yyyy hh:mm a'}}" disabled="" class="ng-pristine ng-untouched ng-valid ng-empty">
+                </div>
+                <div class="col-lg-2">
+                    <label>LAB</label>
+                </div>
+                <div class="col-lg-4">
+                    <select class="form-control" ng-model="Order.selected_lab" ng-change="updateLabTests(Order.selected_lab)" placeholder="Select Lab" name="selected_lab" ng-class="{true: 'error'}[submitted && addForm.selected_lab.$invalid]" required>
+                        <option value=""></option>
+                        <option ng-repeat="lab in labs" value="{{ lab.id }}">{{ lab.name }}</option>
+                    </select>
+                    <p class="help-block PIValid" ng-show="submitted && addForm.selected_lab.$error.required">Required</p>
+                </div>
+                </div>
+                <div class="row margin-bottom-xxl">
+                <div class="col-lg-2">
+                    <label>add lab test</label>
+                </div>
+                <div class="col-lg-6">
+                    <select class="form-control" id="lab_test" ng-model="Order.lab_test" placeholder="Search Lab Test" ng-options="labTest as labTest.name for labTest in labTests">
+                    </select>
+                </div>
+                <div class="col-lg-3">
+                    <select class="form-control" id="priority" ng-model="Order.priority" placeholder="Select Priority">
+                        <option value=""></option>
+                        <option>Low</option>
+                        <option>Medium</option>
+                        <option>High</option>
+                    </select>
+                </div>
+                <div class="col-lg-1">
+                    <span class="plus" ng-click="addTest()"><i class="md-add"></i></span>
+                </div>
+                </div>
+                <div class="row margin-bottom-xxl">
+                <div class="col-lg-12">
+                    <p class="help-block PIValid" ng-show="submitted && !testAdded">Required</p>
+                    <table class="table table-striped no-margin table-custom">
+                        <thead>
+                            <tr>
+                                <th>Test</th>
+                                <th>Cost</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="lab_test in lab_tests_td">
+                                <td>{{ lab_test.name }}</td>
+                                <td>N{{ lab_test.cost }}</td>
+                                <td>{{ lab_test.priority }}</td>
+                            </tr>
+                            <tr>
+                                <td>TOTAL COST</td>
+                                <td>N{{ lab_test_total }}</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                    </div>
+                <div class="row margin-bottom-xxl">
+                <!-- <div class="col-lg-2">
+                    <label>Clinical Information</label>
+                </div>
+                <div class="col-lg-4">
+                    <input type="text" class="form-control" placeholder="" ng-model="Order.clinical_information" name="clinical_information" ng-class="{true: 'error'}[submitted && addForm.clinical_information.$invalid]" required>
+                </div>
+                <div class="col-lg-2">
+                    <label>Diagnosis</label>
+                </div>
+                <div class="col-lg-4 margin-bottom-xxl">
+                    <input type="text" class="form-control" placeholder="" ng-model="Order.diagnosis" name="diagnosis" ng-class="{true: 'error'}[submitted && addForm.diagnosis.$invalid]" required>
+                </div> -->
+                    </div>
+                <div class="row">
+                <div class="col-lg-12">
+                    <label>add notes</label>
+                </div>
+                <div class="col-lg-12">
+                    <textarea placeholder="Write here..." ng-model="Order.notes" name="notes" ng-class="{true: 'error'}[submitted && addForm.notes.$invalid]" required></textarea>
+                </div>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-default button-style-1" ng-click="submitted = true;">create</button>
+                <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal" ng-disabled="OrderBtn">Cancel</button>
+            </div>
+        </form>
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="checkout" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-mid">
+        <form class="custom-form" ng-submit="checkout(CO)">
+            <div class="modal-content">
+                <div class="modal-header pop_head">
+                    <h2>Check Out Patient</h2>
+                </div>
+                <div class="modal-body">
+                    <div class="col-lg-12 no-padding margin-bottom-xxl">
+                        <div class="alert {{messageType}}" role="alert" ng-show="message">
+                            <i class="{{errorSymbol}}"></i> {{errorMessage}}
+                        </div>
+                        <div class="radio radio-styled">
+                            <label>
+                                <input type="radio" name="checkoutpatient" value="Noappointment" checked>
+                                <span>No Appointment</span>
+                            </label>
+                        </div>
+                        <div class="radio radio-styled">
+                            <label>
+                                <input type="radio" name="checkoutpatient" value="followUp" ng-model="CO.reason">
+                                <span>Follow up</span>
+                            </label>
+                        </div>
+                        <div class="radio radio-styled">
+                            <label>
+                                <input type="radio" name="checkoutpatient" value="admitPatient" ng-model="CO.reason">
+                                <span>Admit Patient</span>
+                            </label>
+                        </div>
+                        <div class="radio radio-styled">
+                            <label>
+                                <input type="radio" name="checkoutpatient" value="dead" ng-model="CO.reason">
+                                <span>Dead</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="checkout_patient_tab_con">
+                        <div id="Noappointment" class="active">
+                            <label class="margin-bottom-xl">Note</label>
+                            <textarea placeholder="Write Here..." ng-model="CO.note"></textarea>
+                        </div>
+                        <div id="followUp" class="row">
+                            <div class="col-lg-2">
+                                <label>DATE</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="input-group date select-date col-lg-12">
+                                    <div class="input-group-content">
+                                        <input type="text" class="form-control" placeholder="Select Date" ng-model="CO.date">
+                                    </div>
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <label>Time</label>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="input-group bootstrap-timepicker timepicker col-lg-12">
+                                    <input type="text" class="form-control input-small timepicker" ng-model="CO.time">
+                                    <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <label class="margin-bottom-xl">Note</label>
+                                <textarea class="margin-bottom-lg" placeholder="Write Here..." ng-model="CO.note"></textarea>
+                            </div>
+                        </div>
+                        <div id="admitPatient" class="row">
+                            <div class="margin-bottom-xxl row">
+                            <div class="col-lg-12">
+                                <span class="txt-style-4">Presenting Complaint: Captured from Clinical Note</span>
+                            </div>
+                                </div>
+                            <div class="margin-bottom-xxl row">
+                            <!-- <div class="col-lg-3">
+                                <label>to specialty</label>
+                            </div>
+                            <div class="col-lg-3 select-con">
+                                <select class="form-control" ng-model="CO.CPN" placeholder="Clinic Progress Notes">
+                                    <option value=""></option>
+                                <option value="{{w.id}}" ng-repeat="w in encountersDropdownData.departments">{{w.name}}</option>
+                                </select>
+                            </div> -->
+                            <div class="col-lg-3">
+                                <label>admit to ward</label>
+                            </div><!-- ng-class="{true: 'error'}[submitted && moveForm.ward.$invalid]"  -->
+                            <div class="col-lg-3 select-con select-con_small">
+                                <select class="form-control" name="ward" ng-change="wardSelected(CO.ward);" ng-model="CO.ward" placeholder="Select Ward">
+                                <option value=""></option>
+                                <option value="{{w.id}}" ng-repeat="w in wardDropdown">{{w.name}}</option>
+                            </select>
+                                <div class="ward-button-con" ng-hide="wardselect">
+                                    <button class="ward-button" ng-click="showbeds();" type="button"></button>
+                                    <div class="select-bed-dropdown" ng-hide="showBed">
+                                        <div class="radio radio-styled" ng-repeat="beds in noOFBeds">
+                                            <div class="radio radio-styled">
+                                                <label>
+                                                    <input type="radio" name="checked" ng-model="action" ng-click="bedSelected(beds.id);">
+                                                    <span>{{beds.id}}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="margin-bottom-xxl row">
+                            <div class="col-lg-3">
+                                <label>Admitted DATE</label>
+                            </div>
+                            <div class="col-lg-3">
+                                <label class="txt-style-4">{{admittedDate}}</label>
+                            </div>
+                            <div class="col-lg-3">
+                                <label>Estimated Discharge</label>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="input-group date select-date col-lg-12">
+                                    <div class="input-group-content">
+                                        <input type="text" class="form-control" placeholder="Select Date" ng-model="CO.discharge">
+                                    </div>
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                                </div>
+                            <div class="margin-bottom-xxl row">
+                            <div class="col-lg-12">
+                                <label class="margin-bottom-xl">Note</label>
+                                <textarea class="margin-bottom-lg" placeholder="Write Here..." ng-model="CO.note"></textarea>
+                            </div>
+                                </div>
+                        </div>
+                        <div id="dead" class="row">
+                            <div class="col-lg-12">
+                                <label class="margin-bottom-xl">Note</label>
+                                <textarea class="margin-bottom-lg" placeholder="Write Here..." ng-model="CO.note"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer padding-right-0">
+                        <button type="submit" class="btn btn-default button-style-1 padding11">Save & Close</button>
+                        <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </form>
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_2" id="createAppointment" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Create Appointment</h2>
+            </div>
+            <form class="custom-form" name="myFormAdd" ng-model="myFormAdd" novalidate ng-submit="createAppointments(appointment);">
+                <div class="row">
+                    <div class="col-lg-12 margin-top-10">
+                        <div class="col-lg-11">
+                            <div class="header-search margin-right-0 col-lg-12">
+                                <button type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                                <input class="search_field" type="text" ng-model="appointment.appointmentSearch" placeholder="Search by Name or Patient Id" id="findPatient" data-source="{{PatientSearch}}search_patient" name="FindPatient" ng-class="{true: 'error'}[submitted && myFormAdd.FindPatient.$invalid]" required>
+                                <!-- <input type="text" value="{{prefilledPatientName}}" disabled="true" ng-value="PIDwithName" ng-model="appointment.selectedPatientID">
+                                <input type="hidden" ng-model="appointment.selectedPatientID" /> -->
+                            </div>
+                        </div>
+                        <div class="col-lg-1">
+                            <button type="button" ng-click="autoFocused();" class="scan-icon button-custom" style="width: 25px;"></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-2">
+                            <label>Speciality</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <select class="form-control" ng-model="appointment.department" placeholder="Select" name="depart" ng-class="{true: 'error'}[submitted && myFormAdd.depart.$invalid]" required>
+                                <option value=""></option>
+                                <option ng-repeat="d in encountersDropdownData.departments" value="{{ d.id }}">{{ d.name }}</option>
+                            </select>
+                            <p class="help-block PIValid" ng-show="submitted && myFormAdd.depart.$error.required">Required</p>
+                        </div>
+                        <div class="col-lg-2">
+                            <label>Whom To See</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <select class="form-control" ng-model="appointment.doctor" placeholder="Select" name="wts" ng-class="{true: 'error'}[submitted && myFormAdd.wts.$invalid]" required>
+                                <option value=""></option>
+                                <option ng-repeat="d in encountersDropdownData.doctors" value="{{ d.id }}">{{ d.name }}</option>
+                            </select>
+                            <p class="help-block PIValid" ng-show="submitted && myFormAdd.wts.$error.required">Required</p>
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-6 no-padding">
+                              <div class="col-lg-4">
+                                <label>Date</label>
+                            </div>
+                            <div class="col-lg-8">
+                                <div class="input-group date select-date col-lg-12">
+                                    <div class="input-group-content">
+                                        <input type="text" class="form-control" name="date" placeholder="Select Date"  ng-model="appointment.date" ng-class="{true: 'error'}[submitted && myFormAdd.date.$invalid]" required>
+                                    </div>
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                </div>
+                                <p class="help-block PIValid" ng-show="submitted && myFormAdd.date.$error.required">Required</p>
+                            </div>
+                        </div>
+                         <div class="col-lg-2">
+                            <label>Time</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="input-group bootstrap-timepicker col-lg-12">
+                                <input type="text" class="form-control input-small timepicker"  ng-model="appointment.startTime" name="starttime" ng-class="{true: 'error'}[submitted && myFormAdd.starttime.$invalid]" required>
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
+                            </div>
+                            <p class="help-block PIValid" ng-show="submitted && myFormAdd.starttime.$error.required">Required</p>
+                        </div>
+                    </div>
+                    <div class="row margin-bottom-xxl">
+                        <div class="col-lg-2">
+                            <label>Reason</label>
+                        </div>
+                        <div class="col-lg-4">
+                            <textarea ng-model="appointment.otherReason" name="otherReason" placeholder="Describe here" ng-class="{true: 'error'}[submitted && myFormAdd.otherReason.$invalid]" required></textarea>
+                            <p class="help-block PIValid" ng-show="submitted && myFormAdd.otherReason.$error.required">Required</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-default button-style-1" ng-click="submitted = true;" ng-disabled="addformsubmission()">create</button>
+                    <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal" ng-disabled="OrderBtn" ng-click="submitted = false;">Cancel</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="removeEncounter" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Confirmation</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Are you Sure want to delete?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-toggle="modal" data-dismiss="modal" ng-click="removeEncounter();">Ok</button>
+                <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="counter_pop custom_popup update-encounter" ng-show="updateEncounterPopUp">
+    <div class="pop_head col-lg-12">
+        <h2>Update Encounter</h2> 
+    </div>
+    <div class="pop_body">
+        <div class="alert {{messageType}}" role="alert" ng-show="message">
+            <i class="{{errorSymbol}}"></i> {{errorMessage}}
+        </div>
+        <form class="custom-form" name="encounterForm" ng-model="myForm" novalidate ng-submit="UpdatevalidateEncounterForm(updateEncounter);" >
+            <div class="col-lg-6">
+                <label>clinic facility / Dept</label>
+            </div>
+            <div class="col-lg-6">
+                <select class="form-control" ng-class="{true: 'error'}[submitted && encounterForm.department.$invalid]" name="department" ng-model="updateEncounter.department" placeholder="Select" required>
+                    <option value=""></option>
+                    <option ng-selected="updateEncounter.department == department.id" ng-repeat="department in encountersDropdownData.departments" value="{{department.id}}">{{department.name}}</option>
+                </select>
+                <p class="help-block PIValid" ng-show="submitted && encounterForm.department.$error.required">Required</p>
+            </div>
+
+            <!-- <div class="col-lg-6">
+                <label>encounter class</label>
+            </div>
+            <div class="col-lg-6">
+                <select class="form-control" ng-class="{true: 'error'}[submitted && encounterForm.class.$invalid]" name="class" ng-model="updateEncounter.class" placeholder="Select" required>
+                    <option value=""></option>
+                   <option value="Emergency">Emergency</option>
+                    <option value="Inpatient">Inpatient</option>
+                    <option value="Outpatient">Outpatient</option>
+                    <option value="Preadmit">Preadmit</option>
+                    <option value="Recurring patient">Recurring patient</option>
+                    <option value="Obstetrics">Obstetrics</option>
+                </select>
+                <p class="help-block PIValid" ng-show="submitted && encounterForm.class.$error.required">Required</p>
+            </div> -->
+
+            <div class="col-lg-6">
+                <label>encounter type</label>
+            </div>
+            <div class="col-lg-6">
+                <select class="form-control" ng-class="{true: 'error'}[submitted && encounterForm.type.$invalid]" name="type" ng-model="updateEncounter.type" placeholder="Select" required>
+                    <option value=""></option>
+                    <!-- <option ng-repeat="type in types" value="{{type.id}}">{{type.name}}</option> -->
+                    <option value="Consultation">Consultation</option>
+                    <option value="Surgical procedure">Surgical procedure</option>
+                    <option value="Followup visit">Followup visit</option>
+                    <option value="Rehabilitation">Rehabilitation</option>
+                </select>
+                <p class="help-block PIValid" ng-show="submitted && encounterForm.type.$error.required">Required</p>
+            </div>
+            <div class="col-lg-6">
+                <label>Room</label>
+            </div>
+
+            <div class="col-lg-6">
+                <select class="form-control" ng-class="{true: 'error'}[submitted && encounterForm.room.$invalid]" name="room" ng-model="updateEncounter.room" placeholder="Select" required>
+                    <option value=""></option>
+                    <option ng-selected="updateEncounter.room == room.id" ng-repeat="room in encountersDropdownData.rooms" value="{{room.id}}">{{room.name}}</option>
+                </select>
+                <p class="help-block PIValid" ng-show="submitted && encounterForm.room.$error.required">Required</p>
+            </div>
+            <div class="col-lg-12">
+            <img src="assets/img/loader.gif" class="pull-right encounter-loader {{hideLoader}}"/>
+                <div class="pull-right">
+
+                    <button type="submit" class="btn ink-reaction button-style-1" ng-click="submitted = true;" ng-disabled="updateEncounterBtn">Update encounter</button>
+                    <button type="button" class="btn ink-reaction button-style-1 button-style-1_a close_custom_pop" ng-click="closeupdateEncounter();" ng-disabled="updateEncounterBtn">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal fade modal-size_1 ng-scope in" id="addpatient" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Add Vitals</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">Continue to Add Patient Vitals</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-toggle="modal" data-target="#vital-signs" data-dismiss="modal">Ok</button>
+                <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_3" id="vital-signs" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Vitals Signs</h2>
+            </div>
+            <div class="modal-body">
+                <form class="custom-form" name="vitalForm" novalidate ng-submit="validateVitals(vital);">
+                    <div class="row">
+                        <div class="row no-margin">
+                            <div class="col-lg-4" >
+                                <div class="col-lg-12 margin-bottom-xxl">
+                                    <label class="label-style">Blood Pressure (mm Hg)</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>systolic (mm hg)</label>
+                                </div>
+                                <div class="col-lg-6 margin-bottom-xxl">
+                                    <input type="text" class="maskCost" placeholder="systolic (mm hg)"  ng-class="{
+                                            true
+                                            : 'error'}[vital.diastolic != undefined && vital.systolic == undefined]" ng-model="vital.systolic" numbers-only required/>
+                                    <p ng-show="vital.diastolic != undefined && vital.systolic == undefined" class="help-block PIValid">Required</p>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>diastolic (mm hg)</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <input type="text" class="maskCost" placeholder="diastolic (mm hg)" ng-class="{
+                                            true
+                                            : 'error'}[vital.diastolic == undefined && vital.systolic != undefined]" ng-model="vital.diastolic" numbers-only required/>
+                                    <p ng-show="vital.systolic != undefined && vital.diastolic == undefined" class="help-block PIValid">Required</p>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="col-lg-12 margin-bottom-xxl">
+                                    <label class="label-style">Pulse Rate (min/bpm)</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>pulse</label>
+                                </div>
+                                <div class="col-lg-6 margin-bottom-xxl">
+                                    <input type="text" placeholder="pulse" ng-model="vital.pulse" class="maskCost"/>
+                                </div>
+                                <!-- <div class="col-lg-12">
+                                    <label class="label-style">Pulse Rate (min/bpm)</label>
+                                </div> -->
+                                <div class="col-lg-6">
+                                    <label>respiratory rate</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <input type="text" placeholder="respiratory rate" ng-model="vital.respiratoryRate" class="maskCost"/>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="col-lg-12 margin-bottom-xxl">
+                                    <label class="label-style">Respiratory Rate (br/min)</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>temperature (c)</label>
+                                </div>
+                                <div class="col-lg-6 margin-bottom-xxl">
+                                    <input type="text" placeholder="temperature (c)" ng-model="vital.temperaturec" ng-change="GetTempcVal()" id="tempc" class="maskCost"/>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>temperature (f)</label>
+                                </div>
+                                <div class="col-lg-6">
+                                    <input type="text" placeholder="temperature (f)" ng-model="vital.temperaturef" ng-change="GetTempfVal()" id="tempf" class="maskCost"/>
+                                </div>
+                            </div>
+                        </div>
+                        <!--<div class="row">-->
+                        <div class="col-lg-12">
+                            <label class="col-lg-12 label-style margin-bottom-xxl margin-top-10">BMI (kg / m^2)</label>
+                            <!-- <div class="col-lg-5 pull-right">
+                                <div class="pull-right">
+                                    <a class="txt-style-4" href="javascript:;">Attach</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+                                    <a class="txt-style-4" href="javascript:;">Past Notes</a>
+                                </div>
+                            </div> -->
+                        </div>
+                        <!--</div>-->
+                        <div class="col-lg-4">
+                            <div class="col-lg-6">
+                                <label>result</label>
+                            </div>
+                            <div class="col-lg-6 margin-bottom-xxl">
+                                <input type="text" placeholder="0" ng-model="vital.result" readonly/>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>weight (kg)</label>
+                            </div>
+                            <div class="col-lg-6 margin-bottom-xxl">
+                                <input type="text" ng-class="{true: 'error'}[vital.weight == undefined && vital.height != undefined]" placeholder="weight (kg)" ng-model="vital.weight" ng-keyup="Calculatebmi()" required class="maskCost"/>
+                                <p ng-show="vital.weight == undefined && vital.height != undefined" class="help-block PIValid">Required</p>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <label>height (cm)</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="text" ng-class="{true: 'error'}[vital.height == undefined && vital.weight != undefined]" placeholder="height (cm)" ng-model="vital.height" ng-keyup="Calculatebmi()" required class="maskCost" />
+                                <p ng-show="vital.height == undefined && vital.weight != undefined" class="help-block PIValid">Required</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-8 margin-bottom-xxl">
+                            <div class="col-lg-3">
+                                <label>Notes</label>
+                            </div>
+                            <div class="col-lg-9">
+                                <textarea placeholder="Write Your Text Here" ng-model="vital.notes"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-default button-style-1" ng-click="submitted = true;">Save</button>
+                            <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+</div>
+
+<div class="modal fade modal-size_1" id="scanbarcode" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Scan Bar Code</h2>
+            </div>
+            <div class="modal-body">
+                <!-- <form class="custom-form">-->
+                <!--<div class="row">-->
+                    <input class="form-control focusedField {{invalidBarCodeColor}}" id="abc" type="text" placeholder="Scan Bar Code" autofocus ng-click="autoFocused();"/>
+                    <p ng-show="barcodeError" class="help-block PIValid">{{invalidBarCode}}</p>
+                <!--</div>-->
+                <!-- </form> -->
+            </div>
+             <div class="modal-footer">
+                <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">OK</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="error200" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Error</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtext">{{errorLabOrder}}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-dismiss="modal">Ok</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade modal-size_1" id="assignRoom" tabindex="-1" role="dialog" aria-labelledby="simpleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header pop_head">
+                <h2>Assign Room</h2>
+            </div>
+            <div class="modal-body">
+        <form class="custom-form" name="updateAssignForm" ng-model="myForm" novalidate>
+            <div class="col-lg-6">
+                <label>Room</label>
+            </div>
+            <div class="col-lg-6">
+                <select class="form-control" ng-class="{true: 'error'}[submitted && updateAssignForm.room.$invalid]" name="room" ng-model="updateAssignRoom.room" placeholder="Select" required>
+                    <option ng-selected="updateAssignForm.room == room.id" ng-repeat="room in encountersDropdownData.rooms" value="{{room.id}}">{{room.name}}</option>
+                </select>
+                <p class="help-block PIValid" ng-show="submitted && updateAssignForm.room.$error.required">Required</p>
+            </div><br>
+            		</form>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default button-style-1" data-toggle="modal" data-dismiss="modal" ng-click="assignRoom(updateAssignForm);">Ok</button>
+                <button type="button" class="btn button-style-1 button-style-1_a" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
